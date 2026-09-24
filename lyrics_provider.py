@@ -14,7 +14,7 @@ def search_lyrics(q: str = Query(min_length=2, max_length=200)):
     if len(query) < 2:
         raise HTTPException(400, 'Enter a song title and artist.')
     request = Request('https://lrclib.net/api/search?' + urlencode({'q': query}),
-        headers={'User-Agent': 'OpenSuno/1.0 (https://github.com/victorcampeanu/OpenSuno)', 'Accept': 'application/json'})
+        headers={'User-Agent': 'OpenSuno/1.0 (https://github.com/victorcampeanu/OpenSuno-YuE2)', 'Accept': 'application/json'})
     try:
         with urlopen(request, timeout=15) as response:
             records = json.load(response)
