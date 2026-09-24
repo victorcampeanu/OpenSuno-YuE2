@@ -1,7 +1,5 @@
 # OpenSuno-YuE2
 
-> *Suno liber in aeternum*: sound, free forever. The name echoes the Latin *sonō*, "I sound".
-
 Local music generation with a browser interface for the [YuE2](https://huggingface.co/m-a-p/YuE2-3B) model on Apple Silicon and Windows/NVIDIA:
 lyrics and style prompts, instrumental mode, covers of uploaded recordings, song editing and
 extension, community LoRAs, a library with projects, and an optional render node on another
