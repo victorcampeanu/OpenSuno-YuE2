@@ -39,3 +39,5 @@ model/cuda
 *.command
 *.ps1
 agent-transcripts
+site
+docs

@@ -9,6 +9,7 @@ machine.
 
 ![Cover mode: Renders LoRA, voice, seed and sliders next to the library](docs/screenshots/cover.jpg)
 
+- [opensuno.org](https://opensuno.org): project website.
 - [START-HERE.md](START-HERE.md): how to use the page and what each control does.
 - [FEATURES.md](FEATURES.md): every feature, how it works and what it improves.
 - [MODELS.md](MODELS.md): which models to download, how (from the page or by hand) and how to use
