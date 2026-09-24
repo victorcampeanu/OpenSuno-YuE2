@@ -1,3 +1,6 @@
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0,str(_Path(__file__).resolve().parents[1]/'app'))
 import os
 from pathlib import Path
 from types import SimpleNamespace
@@ -34,7 +37,7 @@ class PlatformTest(unittest.TestCase):
         parent = subprocess.Popen([sys.executable, '-c', 'import time; time.sleep(60)'])
         watcher = subprocess.Popen([sys.executable, '-c',
             'from runtime_platform import watch_parent; watch_parent()'],
-            cwd=Path(__file__).resolve().parents[1],
+            cwd=Path(__file__).resolve().parents[1]/'app',
             env={**os.environ, 'YUE2_PARENT_PID': str(parent.pid)})
         try:
             parent.terminate()

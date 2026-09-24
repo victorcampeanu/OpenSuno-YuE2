@@ -1,8 +1,8 @@
 # Models: download and use
 
 OpenSuno ships no model weights. Everything is downloaded from Hugging Face at a pinned revision and
-checked against the SHA-256 in [`model-assets.json`](model-assets.json) (models) and
-[`lora-assets.json`](lora-assets.json) (LoRAs). No Hugging Face account or token is needed; all
+checked against the SHA-256 in [`model-assets.json`](../config/model-assets.json) (models) and
+[`lora-assets.json`](../config/lora-assets.json) (LoRAs). No Hugging Face account or token is needed; all
 repositories used are public.
 
 ## Packages
@@ -20,7 +20,7 @@ Leave about 20 GB free for weights plus the Python environments.
 
 ## Download from the page (recommended)
 
-1. Install and start the Studio (see [README.md](README.md#install)), then open
+1. Install and start the Studio (see [README.md](../README.md#install)), then open
    <http://127.0.0.1:7862>.
 2. Open **Models** and click **Download** next to each package you want.
 3. Wait until the package shows as installed. Downloads run one file at a time, resume after an
@@ -40,7 +40,7 @@ curl -X POST -H "Authorization: Bearer $OPENSUNO_NODE_TOKEN" \
 ```
 
 `model` accepts `bf16`, `cuda-bf16`, `cuda-fp8`, `analysis`, `tokens`, a LoRA id from
-`lora-assets.json`, `loras` (every LoRA), `missing` (everything this machine can use) or `all`.
+`config/lora-assets.json`, `loras` (every LoRA), `missing` (everything this machine can use) or `all`.
 The same values work against the Studio at `POST http://127.0.0.1:7862/api/models/download?model=`.
 
 ## Download by hand
@@ -85,12 +85,12 @@ LoRAs are small adapters that push YuE2 toward a style (how the song is written)
 is rendered).
 
 - **Models → LoRAs** lists the documented community adapters from
-  [`lora-assets.json`](lora-assets.json): YuE2 instrumental (Mothersuperior v3), Old School
+  [`lora-assets.json`](../config/lora-assets.json): YuE2 instrumental (Mothersuperior v3), Old School
   Hip-Hop, the MLTNT / CHNSN / QWWL / DRKSF / CNZN artist packs and the Real-audio decoder v9.
   Downloaded files go to `loras/`.
 - Any other YuE2 LoRA in `.safetensors` (Hugging Face, PEFT, ComfyUI or Sound & Vision layout) can be
   dropped into `loras/` by hand. It appears in the picker the next time it opens. See
-  [`loras/README.md`](loras/README.md).
+  [`loras/README.md`](../loras/README.md).
 
 To use one, open **More Options** when creating a song:
 
@@ -108,5 +108,5 @@ not rewritten into a loop; only its sound half, if it has one, stays. Details ar
 
 All model weights above are **CC BY-NC 4.0 (non-commercial)** unless the model card says otherwise;
 read each model card before using them, or music made with them, commercially. Each LoRA carries its
-author's license on its Hugging Face page. OpenSuno's own code is MIT (see [LICENSE](LICENSE)); that does not relicense the
-models. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+author's license on its Hugging Face page. OpenSuno's own code is MIT (see [LICENSE](../LICENSE)); that does not relicense the
+models. See [THIRD_PARTY_NOTICES.md](../THIRD_PARTY_NOTICES.md).

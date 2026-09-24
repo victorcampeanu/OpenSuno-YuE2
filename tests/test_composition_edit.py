@@ -1,3 +1,6 @@
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0,str(_Path(__file__).resolve().parents[1]/'app'))
 import copy,json,tempfile,unittest
 from pathlib import Path
 from composition_edit import split_score,lyric_sections,apply,save_draft,load_draft,source_song

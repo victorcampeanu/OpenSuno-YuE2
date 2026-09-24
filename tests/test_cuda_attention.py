@@ -1,4 +1,7 @@
 """Run with .cuda-venv to verify the Windows attention memory fallback."""
+import sys as _sys
+from pathlib import Path as _Path
+_sys.path.insert(0,str(_Path(__file__).resolve().parents[1]/'app'))
 import importlib.util
 import sys
 import unittest

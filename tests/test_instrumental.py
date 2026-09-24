@@ -3,7 +3,7 @@ from pathlib import Path
 from unittest.mock import patch
 from fastapi.testclient import TestClient
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0,str(ROOT/'app'))
 import instrumental
 from vendor import yue2_abc as abc
 from studio_fixture import studio_root, load_studio

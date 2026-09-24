@@ -5,7 +5,7 @@ from runtime_platform import replace_file
 import instrumental
 import cover_arrangement
 import vocal_register
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parents[1]
 MODEL_CACHE=globals().get('MODEL_CACHE',{})
 LORA_CACHE=MODEL_CACHE.setdefault('_loras',{})   # parsed LoRA deltas, kept with the resident model
 CHECK_CANCEL=globals().get('CHECK_CANCEL',lambda:None)

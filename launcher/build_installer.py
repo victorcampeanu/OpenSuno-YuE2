@@ -23,7 +23,7 @@ PYTHON312_URL = RELEASE + 'cpython-3.12.14%2B20260901-aarch64-apple-darwin-insta
 PYTHON311_URL = RELEASE + 'cpython-3.11.16%2B20260901-aarch64-apple-darwin-install_only.tar.gz'
 FFMPEG_URL = 'https://github.com/zackees/ffmpeg_bins/raw/main/v8.0/darwin_arm64.zip'
 # Not shipped: tests, hosting config, the dev-only notes.
-SKIP = ('tests/', '.vercel', 'vercel.json', 'TODO-CUDA.md', 'dist/', 'site/', 'docs/screenshots/')
+SKIP = ('tests/', '.vercel', 'vercel.json', 'docs/TODO-CUDA.md', 'dist/', 'site/', 'docs/screenshots/')
 SWIFT = ('/usr/bin/xcrun', 'swiftc', '-O', '-swift-version', '5', '-target', 'arm64-apple-macos13.0')
 
 # The /usr/bin/python3 shim exports the Command Line Tools SDK, which Xcode's Swift toolchain refuses.

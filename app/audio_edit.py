@@ -12,7 +12,7 @@ from pathlib import Path
 def binary(name):
     path = shutil.which(name)
     if not path:
-        installer = 'Install OpenSuno.ps1' if os.name == 'nt' else 'Install OpenSuno.command'
+        installer = r'scripts\Install OpenSuno.ps1' if os.name == 'nt' else 'scripts/Install OpenSuno.command'
         raise ValueError(f'{name} is not installed. Run {installer}.')
     return path
 

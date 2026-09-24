@@ -8,7 +8,7 @@ import numpy as np,sys,types,unittest
 from dataclasses import dataclass,field,asdict
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0,str(ROOT/'app'))
 
 EOD=151643;ABC_START,ABC_END=151847,151848;MUSIC_START,MUSIC_END=151851,151852;CODEC_OFFSET=151853;CONTEXT=24576;VOCAB_SIZE=184704
 INSTRUCTIONS={'off':'Generate music.','melody':'Generate a melody, then music.','full':'Generate chords, then music.'}

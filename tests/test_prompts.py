@@ -6,7 +6,7 @@ import unittest
 from fastapi.testclient import TestClient
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0,str(ROOT/'app'))
 from prompts import Prompts, PROMPT_LIMIT
 from studio_fixture import studio_root, load_studio
 

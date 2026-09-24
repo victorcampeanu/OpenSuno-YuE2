@@ -41,3 +41,5 @@ model/cuda
 agent-transcripts
 site
 docs
+scripts
+requirements

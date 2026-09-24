@@ -9,19 +9,20 @@ from unittest.mock import patch
 from pathlib import Path
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0,str(ROOT/'app'))
 from worker_pool import WorkerPool,PageLeases
 from runtime_platform import environment_python
 
 class ResidentWorkersTest(unittest.TestCase):
     def setUp(self):
         self.tmp=tempfile.TemporaryDirectory();self.root=Path(self.tmp.name)
-        shutil.copy(ROOT/'resident_worker.py',self.root/'resident_worker.py')
-        shutil.copy(ROOT/'runtime_platform.py',self.root/'runtime_platform.py')
+        (self.root/'app').mkdir()
+        shutil.copy(ROOT/'app/resident_worker.py',self.root/'app/resident_worker.py')
+        shutil.copy(ROOT/'app/runtime_platform.py',self.root/'app/runtime_platform.py')
         self.python_patch=patch('worker_pool.environment_python',return_value=Path(sys.executable))
         self.python_patch.start()
         self.addCleanup(self.python_patch.stop)
-        (self.root/'worker.py').write_text('''import json,sys,time,os
+        (self.root/'app/worker.py').write_text('''import json,sys,time,os
 from pathlib import Path
 p=Path(sys.argv[1]);r=json.loads((p/'request.json').read_text())
 MODEL_CACHE['calls']=MODEL_CACHE.get('calls',0)+1
@@ -152,14 +153,14 @@ class ModelCacheTest(unittest.TestCase):
                 request={'kind':'plan','model':'bf16','style':'Piano','lyrics':'', 'abc':'X:1\nK:C\nC', 'abc_sampling':{}}
                 if index==0: request['_preload']=True
                 (p/'request.json').write_text(json.dumps(request))
-                with patch.object(sys,'argv',[str(ROOT/'worker.py'),str(p)]):
+                with patch.object(sys,'argv',[str(ROOT/'app/worker.py'),str(p)]):
                     if index==0:
                         with self.assertRaises(SystemExit) as stopped:
-                            runpy.run_path(str(ROOT/'worker.py'),init_globals={'MODEL_CACHE':cache})
+                            runpy.run_path(str(ROOT/'app/worker.py'),init_globals={'MODEL_CACHE':cache})
                         self.assertEqual(stopped.exception.code,0)
                         self.assertFalse((p/'result.json').exists())
                         continue
-                    runpy.run_path(str(ROOT/'worker.py'),init_globals={'MODEL_CACHE':cache})
+                    runpy.run_path(str(ROOT/'app/worker.py'),init_globals={'MODEL_CACHE':cache})
                 self.assertTrue((p/'result.json').exists())
                 self.assertEqual(cache['bf16'].log.__globals__['jobdir'],p.resolve())
                 self.assertIs(engine._resident_synthesize,original)

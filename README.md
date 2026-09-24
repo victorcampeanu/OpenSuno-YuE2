@@ -10,14 +10,14 @@ machine.
 ![Cover mode: voice, seed and sliders next to the library](docs/screenshots/cover.webp)
 
 - [opensuno.org](https://opensuno.org): project website.
-- [START-HERE.md](START-HERE.md): how to use the page and what each control does.
-- [FEATURES.md](FEATURES.md): every feature, how it works and what it improves.
-- [MODELS.md](MODELS.md): which models to download, how (from the page or by hand) and how to use
+- [START-HERE.md](docs/START-HERE.md): how to use the page and what each control does.
+- [FEATURES.md](docs/FEATURES.md): every feature, how it works and what it improves.
+- [MODELS.md](docs/MODELS.md): which models to download, how (from the page or by hand) and how to use
   LoRAs.
 
 ## Features
 
-Details for each are in [FEATURES.md](FEATURES.md).
+Details for each are in [FEATURES.md](docs/FEATURES.md).
 
 **Create songs**
 
@@ -79,7 +79,7 @@ Details for each are in [FEATURES.md](FEATURES.md).
 **Models and performance**
 
 - One-click model downloads from the **Models** page: resumable, verified with SHA-256, pinned to
-  exact Hugging Face revisions. See [MODELS.md](MODELS.md).
+  exact Hugging Face revisions. See [MODELS.md](docs/MODELS.md).
 - Models stay loaded between songs, so the second song starts in seconds.
 - MLX speed-ups on Apple Silicon: a sliced output head, batched classifier-free guidance and fewer
   host syncs.
@@ -162,38 +162,38 @@ touching songs, settings or models. The installer is not notarized: on the first
 
 A Studio on another Mac pairs in **Settings → Rendering** with the node's address and token (both
 under the menu bar icon). To build the disk image on a Mac with Xcode:
-`Build OpenSuno Installer.command` writes `dist/OpenSuno.dmg`.
+`scripts/Build OpenSuno Installer.command` writes `dist/OpenSuno.dmg`.
 
 ### Mac: from source
 
 1. Clone the repository and install [Homebrew](https://brew.sh) if necessary.
-2. `bash "Install OpenSuno.command"` installs Python 3.12 and 3.11, FFmpeg and two isolated Python
+2. `bash "scripts/Install OpenSuno.command"` installs Python 3.12 and 3.11, FFmpeg and two isolated Python
    environments (MLX for generation, PyTorch for cover analysis). It can be rerun after a failure.
-3. Open `Launch Studio.command`. The page at <http://127.0.0.1:7862> lists the model packages under
+3. Open `scripts/Launch Studio.command`. The page at <http://127.0.0.1:7862> lists the model packages under
    **Models**: **BF16** (the generator, about 7.5 GB), **Cover analysis** (SheetSage2 and MERT-v2,
    about 2.8 GB, for uploaded recordings) and **Audio input** (about 0.3 GB, needs Cover analysis,
    for *Continue this recording*).
 
 Downloads run one file at a time, resume after interruption and are verified with SHA-256. Once
-installed, generation runs offline. [MODELS.md](MODELS.md) lists every package and how to
+installed, generation runs offline. [MODELS.md](docs/MODELS.md) lists every package and how to
 download it by hand.
 
 ### Windows / NVIDIA
 
 Use 64-bit Windows, an NVIDIA GPU with a current CUDA 13-capable driver, Python 3.11 (with the
 `py` launcher) and FFmpeg/FFprobe on PATH. Run
-`powershell -ExecutionPolicy Bypass -File "Install OpenSuno.ps1"`, then
-`powershell -ExecutionPolicy Bypass -File "Launch Studio.ps1"` and open <http://127.0.0.1:7862>.
+`powershell -ExecutionPolicy Bypass -File "scripts\Install OpenSuno.ps1"`, then
+`powershell -ExecutionPolicy Bypass -File "scripts\Launch Studio.ps1"` and open <http://127.0.0.1:7862>.
 In Models download **PyTorch CUDA BF16**, the Windows default: the official YuE2-3B checkpoint run by
 the upstream `yue2-infer` package in an isolated `.cuda-venv` (PyTorch 2.10 / CUDA 12.8).
 **PyTorch CUDA FP8** shares those downloads and quantizes token generation only; it was slower in
 testing. MLX BF16 stays available for comparison.
 
-The CUDA adapter (`cuda_engine.py`, not a fork of upstream) reserves 2 GiB of VRAM, offloads
+The CUDA adapter (`app/cuda_engine.py`, not a fork of upstream) reserves 2 GiB of VRAM, offloads
 token-generation layers during synthesis and decodes audio in 512-frame tiles; on Windows it selects
 cuDNN attention so SDPA never falls back to a large math-attention buffer. Seeds are repeatable
 within a backend, not across Metal and CUDA. Verify with
-`.venv\Scripts\python.exe check_runtime.py` and
+`.venv\Scripts\python.exe app\check_runtime.py` and
 `.venv\Scripts\python.exe -m unittest discover -s tests -v`. Treat Windows as experimental until
 your song lengths and cover workflow have been validated.
 
@@ -208,8 +208,8 @@ launchd, current song and speed, the address and token other Studios need, Start
 terminal:
 
 ```
-OPENSUNO_NODE_TOKEN=choose-a-secret "./Launch Render Node.command"   # macOS
-$env:OPENSUNO_NODE_TOKEN = 'choose-a-secret'; .\"Launch Render Node.ps1"   # Windows
+OPENSUNO_NODE_TOKEN=choose-a-secret "./scripts/Launch Render Node.command"   # macOS
+$env:OPENSUNO_NODE_TOKEN = 'choose-a-secret'; .\scripts\"Launch Render Node.ps1"   # Windows
 ```
 
 The node listens on port 7863 (`OPENSUNO_NODE_PORT`); without a token it only accepts its own
@@ -253,6 +253,19 @@ recordings and results stay in `uploads/` and `library/`.
 Application code, model runtime source, small configuration files, pinned dependency lists and the
 download manifest. No model weights, tokenizers, recordings, generated songs, environments or caches
 are tracked.
+
+| Folder | Contents |
+|---|---|
+| `app/` | Python backend: Studio server (`server.py`), render node, worker and helpers |
+| `web/` | The browser interface |
+| `model/`, `mert/`, `transcriber/` | Model runtimes (YuE2 MLX, MERT-v2, SheetSage2) |
+| `config/` | Model and LoRA download manifests, generation defaults |
+| `scripts/` | Install and launch scripts for macOS (`.command`) and Windows (`.ps1`) |
+| `launcher/` | The Mac installer, apps and menu bar render node |
+| `requirements/` | Extra dependency lists (`requirements.txt` stays at the root for Vercel) |
+| `docs/` | Guides and screenshots |
+| `site/` | The opensuno.org landing page |
+| `tests/` | Unit and API tests |
 
 ## Sources
 

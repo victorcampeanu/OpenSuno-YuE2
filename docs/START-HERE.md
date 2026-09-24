@@ -1,10 +1,10 @@
-For another Mac, build `OpenSuno.dmg` with **Build OpenSuno Installer.command**; on that Mac, open **Install OpenSuno** in the image and tick Studio, Render node or both. Everything else is in [README.md](README.md). Model weights are downloaded from the page and are not included in Git.
+For another Mac, build `OpenSuno.dmg` with **scripts/Build OpenSuno Installer.command**; on that Mac, open **Install OpenSuno** in the image and tick Studio, Render node or both. Everything else is in [README.md](../README.md). Model weights are downloaded from the page and are not included in Git.
 
 # OpenSuno
 
 Open **http://127.0.0.1:7862** while the local server is running.
 
-To start it later, double-click **Launch Studio.command** in this folder. It runs the server in the background and opens the browser; `launchctl bootout gui/$(id -u)/local.opensuno.studio` stops it. You can also run `./.venv/bin/python server.py` from this folder.
+To start it later, double-click **scripts/Launch Studio.command**. It runs the server in the background and opens the browser; `launchctl bootout gui/$(id -u)/local.opensuno.studio` stops it. You can also run `./.venv/bin/python app/server.py` from the project folder.
 
 ## Create music
 

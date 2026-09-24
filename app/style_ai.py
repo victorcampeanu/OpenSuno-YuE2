@@ -13,7 +13,7 @@ from urllib.request import Request, urlopen
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[1]
 router = APIRouter()
 SYSTEM = '''You write style prompts for YuE2, a text-to-music model.
 Return ONLY one style prompt. No quotes, markdown, titles, or explanation.

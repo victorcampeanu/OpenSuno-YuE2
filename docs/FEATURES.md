@@ -4,7 +4,7 @@ OpenSuno is a local music studio built around the [YuE2-3B](https://huggingface.
 song model. It started (12 September 2026) as a browser front end with a resumable model
 downloader, and grew into a full production tool: cover analysis, model-written
 arrangements, song editing, extension, community LoRAs, workspaces, and a second GPU runtime for Windows.
-This document describes every feature, how it works, and what it improves. For installation and day-to-day usage see [README.md](README.md) and
+This document describes every feature, how it works, and what it improves. For installation and day-to-day usage see [README.md](../README.md) and
 [START-HERE.md](START-HERE.md).
 
 Features are grouped by area rather than by commit. A chronological list is at the end.
@@ -68,7 +68,7 @@ editing and extending possible later.
   generate. Seeds are random per generation unless **Lock seed** is on; **Use these settings** locks
   a candidate's seed. `settings.json` per candidate stores the exact request for reproduction.
 - Four sliders are the only sampling controls: **Weirdness** maps to temperature / top-p / top-k
-  curves around the model defaults (`generation-defaults.json`: 1.0 / 0.95 / 100), **Style influence**
+  curves around the model defaults (`config/generation-defaults.json`: 1.0 / 0.95 / 100), **Style influence**
   to `cfg_scale` (1 → 1.2 → 2), **Repetition** to `repetition_penalty` (Normal = 1.2), **Audio steps**
   to the flow-matching steps (default 2). A saved request whose values sit off a curve (older songs,
   CLI-made requests) restores as *Custom* and is sent back verbatim until the slider is moved. The
@@ -198,11 +198,11 @@ editing and extending possible later.
 
 ### 2.9 macOS launcher, Windows launcher and hosted mode
 
-- **macOS:** The disk image (`Build OpenSuno Installer.command` → `dist/OpenSuno.dmg`) installs
-  **OpenSuno.app** and **OpenSuno Render Node.app**; from a source checkout `Launch Studio.command`
+- **macOS:** The disk image (`scripts/Build OpenSuno Installer.command` → `dist/OpenSuno.dmg`) installs
+  **OpenSuno.app** and **OpenSuno Render Node.app**; from a source checkout `scripts/Launch Studio.command`
   starts the server through launchd in the background, waits until ready and opens the browser.
   Logs in `~/Library/Logs/OpenSuno/server.log`.
-- **Windows:** `Install OpenSuno.ps1` / `Launch Studio.ps1` (see §7).
+- **Windows:** `scripts/Install OpenSuno.ps1` / `scripts/Launch Studio.ps1` (see §7).
 - **Hosted mode:** With `OPENSUNO_HOSTED` or `VERCEL` set, `server.py` serves the website and the
   GPU-free APIs (workspaces, style key shape) on Vercel; `POST /api/jobs` returns 503 and downloads
   404. Music generation is not connected there yet.
@@ -219,8 +219,8 @@ editing and extending possible later.
   artist packs MLTNT, CHNSN, QWWL / DRKSF and CNZN) are listed under a
   separate LoRAs heading, grouped by family with trigger words and recommended settings, and are not part of
   Install all missing. **Download all** on that heading starts every missing adapter at once.
-- **How:** `model-assets.json` pins repository, revision, path, size and SHA-256 for every file;
-  `lora-assets.json` does the same for community adapters, which install into `loras/`.
+- **How:** `config/model-assets.json` pins repository, revision, path, size and SHA-256 for every file;
+  `config/lora-assets.json` does the same for community adapters, which install into `loras/`.
   `model_downloads.py` downloads one file at a time with HTTP Range into `.part`, verifies size and
   SHA-256, and only then replaces the target; servers without range support restart the file safely.
   Several packages can save at once (each LoRA is its own job); a file already transferring is claimed
@@ -255,7 +255,7 @@ editing and extending possible later.
 - **Analysis decoder on CPU:** On Apple Silicon the tiny SheetSage2 BART decoder runs on CPU, where
   it is ~1.9× faster than MPS for incremental decode; MERT stays on the GPU. The analysis loop also
   releases unused Metal cache during long transcriptions.
-- **Defaults:** CFG defaults to 1.2 and audio synthesis to 2 midpoint steps (`generation-defaults.json`),
+- **Defaults:** CFG defaults to 1.2 and audio synthesis to 2 midpoint steps (`config/generation-defaults.json`),
   the fastest settings that held up in listening comparisons; both remain adjustable.
 
 ### 3.4 Native instrumental mode (`instrumental.py`)
@@ -287,7 +287,7 @@ editing and extending possible later.
   full `vae2llm` / `llm2vae` replacement weights (as in the real-audio adapter) are applied too.
   Every delta is checked against the model's layer sizes (`dims_from_config`) before it is used.
   Training step and trigger word are read from native-export metadata when present. Download catalog
-  notes in `lora-assets.json` overlay those fields for known files (including ComfyUI artist LoRAs that
+  notes in `config/lora-assets.json` overlay those fields for known files (including ComfyUI artist LoRAs that
   do not embed a trigger), and choosing one in the picker fills Style (trigger word), Instrumental,
   strength, Plan, style influence, Composition, Weirdness and duration from the card.
   Old School Hip-Hop uses No Plan and CFG 1.0 as published; the Mothersuperior instrumental adapter
@@ -309,7 +309,7 @@ editing and extending possible later.
   them on the CLIP and MODEL slots. On a **cover**, the Writes adapter is applied in full while the
   transcribed score is arranged, then only its decoder (NAR) half is kept for music tokens, so a
   style LoRA cannot collapse the cover into a repeating loop. A saved choice that sits in the wrong slot is named as such
-  in the picker. The Models page groups the catalog the same way (`slot` in `lora-assets.json`,
+  in the picker. The Models page groups the catalog the same way (`slot` in `config/lora-assets.json`,
   default `style`) and, since 2026-09-20, is a full page without the library: package and LoRA
   cards in a responsive grid, each LoRA card showing its recipe line (trigger, strength, plan,
   cfg, training steps). The request
@@ -507,7 +507,7 @@ keeps the melody and chords (4.2–4.3), *Continue this recording* keeps the aud
   and song structure (move, repeat, remove or shorten sections; shorten keeps the first portion at a
   bar boundary). Then **Use edited composition** and **Create**.
 - **How:** Edits are applied to that version's saved `score.abc` and validated with the vendored
-  two-voice ABC checker (`vendor/yue2_abc.py`): unsupported notation and broken voice timing are
+  two-voice ABC checker (`app/vendor/yue2_abc.py`): unsupported notation and broken voice timing are
   rejected rather than silently regenerated; when only arrangement, harmony or tempo change, the
   melody is checked unchanged. *New chords* strips chords and plans with `cot=melody`; *Jazz sevenths*
   extends simple chord symbols and requires existing chords. Drafts live in `.song-edits/<id>.json`
@@ -534,7 +534,7 @@ keeps the melody and chords (4.2–4.3), *Continue this recording* keeps the aud
 
 ## 6. Score and ABC tooling
 
-- **`vendor/yue2_abc.py`:** An original, standard-library parser for the limited two-voice ABC
+- **`app/vendor/yue2_abc.py`:** An original, standard-library parser for the limited two-voice ABC
   dialect shared by YuE2 and SheetSage2. It fails closed on unsupported notation and resolves sounding
   notes, bar grids, chords and key changes as exact fractions. Instrumental mode, composition editing,
   cover arrangement and the tests all verify their output with it.

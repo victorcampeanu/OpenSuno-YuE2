@@ -9,7 +9,7 @@ from fastapi.testclient import TestClient
 from studio_fixture import studio_root, load_studio
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0,str(ROOT/'app'))
 
 
 class HostedStudioTest(unittest.TestCase):
@@ -86,7 +86,7 @@ page = TestClient(server.app).get("/", headers={"host": "opensuno.vercel.app"})
 assert page.status_code == 200, page.status_code
 assert b"OpenSuno" in page.content
 '''
-        result = subprocess.run([sys.executable, '-c', script, str(ROOT)], capture_output=True, text=True, cwd=str(ROOT))
+        result = subprocess.run([sys.executable, '-c', script, str(ROOT / 'app')], capture_output=True, text=True, cwd=str(ROOT))
         self.assertEqual(result.returncode, 0, result.stderr)
 
 

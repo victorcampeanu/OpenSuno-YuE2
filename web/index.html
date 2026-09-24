@@ -25,7 +25,7 @@
 <div id="modelTransfer" hidden><div class="model-transfer-heading"><strong id="modelTransferName"></strong><span id="modelTransferPercent"></span></div>
 <progress id="modelDownloadProgress" max="1" value="0" aria-label="Current model download"></progress>
 <p id="modelSetupStatus" role="status" aria-live="polite"></p></div>
-<p id="modelEnvironmentHelp" hidden>Run <b>Install OpenSuno.command</b> to install the cover-analysis environment.</p></section>
+<p id="modelEnvironmentHelp" hidden>Run <b>scripts/Install OpenSuno.command</b> to install the cover-analysis environment.</p></section>
 <section id="studioSettings" class="card settings-panel" aria-label="Settings" hidden>
 <h2>Settings</h2>
 <p>OpenAI writes style prompts and song thumbnails. The key is kept where they run: on the render node when one is connected, otherwise on this computer.</p>
@@ -36,7 +36,7 @@
 <select id="settingsOpenAIModel" aria-label="OpenAI model"></select>
 <section class="settings-render" aria-labelledby="settingsRenderHeading">
 <h3 id="settingsRenderHeading">Rendering</h3>
-<p class="muted" id="settingsRenderIntro">Songs render on this computer unless a render node is connected. A render node is another machine running <b>render_node.py</b>; it downloads its own models and keeps the finished audio, which you stream from here and download when you want a copy.</p>
+<p class="muted" id="settingsRenderIntro">Songs render on this computer unless a render node is connected. A render node is another machine running <b>app/render_node.py</b>; it downloads its own models and keeps the finished audio, which you stream from here and download when you want a copy.</p>
 <label for="settingsRenderUrl">Render Node Address</label>
 <div class="settings-key-row"><input id="settingsRenderUrl" type="url" maxlength="300" autocomplete="off" spellcheck="false" placeholder="http://192.168.1.20:7863"><button id="settingsRenderConnect" type="button" class="secondary">Connect</button></div>
 <label for="settingsRenderToken">Render Node Token</label>

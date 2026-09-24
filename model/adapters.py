@@ -13,7 +13,7 @@ import sys
 import mlx.core as mx
 import mlx.nn as nn
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
+sys.path.insert(0, str(Path(__file__).resolve().parent.parent / 'app'))
 import loras  # noqa: E402
 
 ATTENTION = ('q_proj', 'k_proj', 'v_proj', 'o_proj')

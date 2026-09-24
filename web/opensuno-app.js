@@ -652,7 +652,7 @@ function showModelSetup(){
  if(envHelp.dataset.remote!==String(!!nodeName)){
   envHelp.dataset.remote=String(!!nodeName);
   if(nodeName)envHelp.textContent='The render node needs its cover-analysis environment: run Install OpenSuno on that machine.';
-  else envHelp.replaceChildren('Run ',Object.assign(document.createElement('b'),{textContent:'Install OpenSuno.command'}),' to install the cover-analysis environment.');
+  else envHelp.replaceChildren('Run ',Object.assign(document.createElement('b'),{textContent:'scripts/Install OpenSuno.command'}),' to install the cover-analysis environment.');
  }
  $('modelTransfer').hidden=!busy&&d.status!=='failed';
  const names={'model/bf16/model.safetensors':'BF16 weights','model/8bit/vae.safetensors':'Shared audio decoder','model/8bit/qwen.tiktoken':'Shared tokenizer','tokens/tokenizer_head_joint_v9.safetensors':'Music tokenizer'};

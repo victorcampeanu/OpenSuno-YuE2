@@ -1,5 +1,5 @@
 $ErrorActionPreference = 'Stop'
-Set-Location -LiteralPath $PSScriptRoot
+Set-Location -LiteralPath (Split-Path -Parent $PSScriptRoot)
 
 function Invoke-Checked {
     param([string]$Program, [string[]]$Arguments)
@@ -21,16 +21,16 @@ if (-not (Test-Path -LiteralPath '.venv\Scripts\python.exe')) {
 if (-not (Test-Path -LiteralPath '.transcribe-venv\Scripts\python.exe')) {
     Invoke-Checked 'py' @('-3.11', '-m', 'venv', '.transcribe-venv')
 }
-Invoke-Checked '.\.venv\Scripts\python.exe' @('-m', 'pip', 'install', '-r', 'requirements-installed.txt')
+Invoke-Checked '.\.venv\Scripts\python.exe' @('-m', 'pip', 'install', '-r', 'requirements\installed.txt')
 # Use the same analysis versions as the Mac, with CUDA-enabled Torch wheels.
 Invoke-Checked '.\.transcribe-venv\Scripts\python.exe' @('-m', 'pip', 'install', 'torch==2.8.0', 'torchaudio==2.8.0', '--index-url', 'https://download.pytorch.org/whl/cu128')
-Invoke-Checked '.\.transcribe-venv\Scripts\python.exe' @('-m', 'pip', 'install', '-r', 'requirements-transcriber.txt')
+Invoke-Checked '.\.transcribe-venv\Scripts\python.exe' @('-m', 'pip', 'install', '-r', 'requirements\transcriber.txt')
 if (-not (Test-Path -LiteralPath '.cuda-venv\Scripts\python.exe')) {
     Invoke-Checked 'py' @('-3.11', '-m', 'venv', '.cuda-venv')
 }
 Invoke-Checked '.\.cuda-venv\Scripts\python.exe' @('-m', 'pip', 'install', 'torch==2.10.0', '--index-url', 'https://download.pytorch.org/whl/cu128')
-Invoke-Checked '.\.cuda-venv\Scripts\python.exe' @('-m', 'pip', 'install', '-r', 'requirements-cuda.txt')
-Invoke-Checked '.\.cuda-venv\Scripts\python.exe' @('check_cuda_runtime.py')
-Invoke-Checked '.\.venv\Scripts\python.exe' @('check_runtime.py')
+Invoke-Checked '.\.cuda-venv\Scripts\python.exe' @('-m', 'pip', 'install', '-r', 'requirements\cuda.txt')
+Invoke-Checked '.\.cuda-venv\Scripts\python.exe' @('app\check_cuda_runtime.py')
+Invoke-Checked '.\.venv\Scripts\python.exe' @('app\check_runtime.py')
 Invoke-Checked '.\.transcribe-venv\Scripts\python.exe' @('-c', 'import torch, torchaudio, transformers, scipy, pretty_midi; assert torch.cuda.is_available(), "CUDA is unavailable for cover analysis"')
-Write-Host 'OpenSuno is ready. Run Launch Studio.ps1, then download a model in Models.'
+Write-Host 'OpenSuno is ready. Run scripts\Launch Studio.ps1, then download a model in Models.'

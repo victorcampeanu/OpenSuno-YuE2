@@ -10,7 +10,7 @@ import time
 import traceback
 from runtime_platform import watch_parent
 
-ROOT = Path(__file__).resolve().parent
+WORKER = Path(__file__).resolve().with_name('worker.py')
 class JobCancelled(BaseException):
     pass
 
@@ -24,12 +24,12 @@ def main():
         sys.stdout.flush(); sys.stderr.flush()
         with (jobdir / 'run.log').open('a') as log:
             os.dup2(log.fileno(), 1); os.dup2(log.fileno(), 2)
-        sys.argv = [str(ROOT / 'worker.py'), str(jobdir)] + (['--analyze'] if command['analyze'] else [])
+        sys.argv = [str(WORKER), str(jobdir)] + (['--analyze'] if command['analyze'] else [])
         code = 0
         def check_cancel():
             if (jobdir / '.cancel-resident').exists(): raise JobCancelled()
         try:
-            runpy.run_path(str(ROOT / 'worker.py'), run_name='__main__',
+            runpy.run_path(str(WORKER), run_name='__main__',
                           init_globals={'MODEL_CACHE': cache, 'CHECK_CANCEL': check_cancel})
         except JobCancelled:
             print('[cancel] Stopped; loaded models retained',flush=True)

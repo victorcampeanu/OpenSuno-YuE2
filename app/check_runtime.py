@@ -17,7 +17,7 @@ def main():
     mx.eval(nn.ConvTranspose1d(4, 2, 4, stride=2)(mx.ones((1, 8, 4))))
     # Exercise the actual shared AR cache and NAR paths with a tiny random
     # backbone. No downloaded weights are needed for this compatibility check.
-    sys.path.insert(0, str(Path(__file__).resolve().parent / 'model'))
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'model'))
     from yue2_model import Yue2Model, KVCache
     cfg = dict(hidden_size=64, intermediate_size=128, num_attention_heads=1,
                num_key_value_heads=1, head_dim=64, rms_norm_eps=1e-6,

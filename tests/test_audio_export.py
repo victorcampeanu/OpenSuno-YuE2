@@ -13,7 +13,7 @@ import wave
 import numpy as np
 from fastapi.testclient import TestClient
 
-ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT))
+ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'app'))
 import audio_export
 from audio_edit import binary
 from studio_fixture import studio_root, load_studio

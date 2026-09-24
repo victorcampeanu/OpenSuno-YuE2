@@ -12,6 +12,6 @@ if __name__ == '__main__':
         assert torch.all(x @ x == 64).item()
     torch.cuda.synchronize()
     info = dict(torch=torch.__version__, cuda=torch.version.cuda, device=torch.cuda.get_device_name(0))
-    marker = Path(__file__).resolve().parent/'.cuda-venv/runtime-ready.json'
+    marker = Path(__file__).resolve().parents[1]/'.cuda-venv/runtime-ready.json'
     marker.write_text(json.dumps(info))
     print(json.dumps(info))

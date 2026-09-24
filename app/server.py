@@ -6,6 +6,8 @@ from fastapi import FastAPI, HTTPException, UploadFile, File, Request
 from fastapi.responses import FileResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field, model_validator, ConfigDict
+# Vercel imports this file as app/server.py without putting app/ on the path.
+if str(Path(__file__).resolve().parent) not in sys.path: sys.path.insert(0,str(Path(__file__).resolve().parent))
 from lyrics_provider import router as lyrics_router
 import style_ai
 from style_ai import ArtworkAsk, generate_artwork, openai_configured
@@ -30,7 +32,7 @@ import hardware
 import render_client
 from render_client import RenderNode, RenderNodeError
 
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parents[1]
 def _flag(name):
     return os.environ.get(name,'').strip().lower() in {'1','true','yes'}
 HOSTED=_flag('OPENSUNO_HOSTED') if 'OPENSUNO_HOSTED' in os.environ else _flag('VERCEL')
@@ -64,7 +66,7 @@ def release_residents():
     preloads.clear()
 leases=PageLeases(lock,release_residents)
 TOKEN=secrets.token_urlsafe(32)
-DEFAULTS=json.loads((ROOT/'generation-defaults.json').read_text())
+DEFAULTS=json.loads((ROOT/'config/generation-defaults.json').read_text())
 downloads=ModelDownloads(ROOT)
 GPU=hardware.detect_gpu()
 RENDER_SETTINGS=DATA_ROOT/'.render-node.json'
@@ -988,7 +990,7 @@ def create(r:Job):
             r.abc=edited['abc'];r.cot=edited['cot'];artwork_from=artwork_from or (edited.get('origin') or {}).get('job')
         if r.kind not in ANALYSIS_KINDS and not model_ready(r.model): raise HTTPException(503,'The selected model is missing. Open Models to download it.')
         if r.kind=='transcribe' and not config()['transcriber_ready']:
-            installer='Install OpenSuno.ps1' if os.name=='nt' else 'Install OpenSuno.command'
+            installer=(r'scripts\Install OpenSuno.ps1' if os.name=='nt' else 'scripts/Install OpenSuno.command')
             raise HTTPException(503,'Cover analysis is not installed. Download Cover analysis in Models and run '+installer+' to set up its environment.')
         if r.kind=='tokenize' and not tokens_ready():
             raise HTTPException(503,'Audio input is not installed. Download Cover analysis and Audio input in Models first.')

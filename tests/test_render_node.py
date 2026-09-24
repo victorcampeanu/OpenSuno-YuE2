@@ -15,7 +15,7 @@ from unittest.mock import patch
 from fastapi.testclient import TestClient
 
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT))
+sys.path.insert(0,str(ROOT/'app'))
 from studio_fixture import studio_root, load_studio
 
 FAKE_WORKER='''import json,sys,time
@@ -62,9 +62,10 @@ class NodeFixture:
     def __init__(self,case,token='secret'):
         self.tmp=tempfile.TemporaryDirectory();case.addCleanup(self.tmp.cleanup)
         self.root=Path(self.tmp.name)
-        for name in ('render_node.py','resident_worker.py','runtime_platform.py','model-assets.json','lora-assets.json'):
+        for name in ('app/render_node.py','app/resident_worker.py','app/runtime_platform.py','config/model-assets.json','config/lora-assets.json'):
+            (self.root/name).parent.mkdir(exist_ok=True)
             shutil.copy2(ROOT/name,self.root/name)
-        (self.root/'worker.py').write_text(FAKE_WORKER)
+        (self.root/'app/worker.py').write_text(FAKE_WORKER)
         python=patch('worker_pool.environment_python',return_value=Path(sys.executable));python.start();case.addCleanup(python.stop)
         # Everything is "installed" on the fake node: weights, the CUDA runtime and the analysis environment.
         for target,value in (('hardware.model_ready',True),('model_downloads.ModelDownloads.package_ready',True)):
@@ -73,7 +74,7 @@ class NodeFixture:
         previous=os.environ.get('OPENSUNO_NODE_TOKEN')
         os.environ['OPENSUNO_NODE_TOKEN']=token
         case.addCleanup(lambda:os.environ.update({'OPENSUNO_NODE_TOKEN':previous}) if previous is not None else os.environ.pop('OPENSUNO_NODE_TOKEN',None))
-        self.module=load('render_node_under_test_'+os.urandom(3).hex(),self.root/'render_node.py')
+        self.module=load('render_node_under_test_'+os.urandom(3).hex(),self.root/'app/render_node.py')
         case.addCleanup(sys.modules.pop,self.module.__name__,None)
         case.addCleanup(self.stop)
         self.client=TestClient(self.module.app,base_url='http://node')

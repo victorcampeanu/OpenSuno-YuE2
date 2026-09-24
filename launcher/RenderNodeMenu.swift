@@ -102,7 +102,7 @@ final class NodeService {
         try? FileManager.default.createDirectory(at: logs, withIntermediateDirectories: true)
         let plist: [String: Any] = [
             "Label": label,
-            "ProgramArguments": [root + "/.venv/bin/python", "-u", root + "/render_node.py"],
+            "ProgramArguments": [root + "/.venv/bin/python", "-u", root + "/app/render_node.py"],
             "WorkingDirectory": root,
             "EnvironmentVariables": [
                 "PATH": root + "/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin",

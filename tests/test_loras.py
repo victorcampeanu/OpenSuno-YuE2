@@ -5,7 +5,7 @@ from unittest.mock import patch
 import numpy as np
 from fastapi.testclient import TestClient
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0,str(ROOT/'app'))
 import loras
 from studio_fixture import studio_root, load_studio
 

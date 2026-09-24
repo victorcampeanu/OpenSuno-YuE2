@@ -109,7 +109,7 @@ def install_python(full):
     say('Installing the Python runtime…')
     extract_runtime(PAYLOAD / 'runtime/python312.tar.gz', HOME / '.venv')
     say('Installing Python packages' + (' for rendering (MLX)…' if full else '…'))
-    pip_install(HOME / '.venv/bin/python', HOME / ('requirements-installed.txt' if full else 'requirements.txt'))
+    pip_install(HOME / '.venv/bin/python', HOME / ('requirements/installed.txt' if full else 'requirements.txt'))
     run(HOME / '.venv/bin/python', '-c', 'import fastapi, uvicorn, requests, multipart' + (', mlx.core, soundfile, tiktoken' if full else ''))
 
 
@@ -131,7 +131,7 @@ def install_analysis():
     say('Installing the cover analysis environment (Python 3.11)…')
     extract_runtime(PAYLOAD / 'runtime/python311.tar.gz', HOME / '.transcribe-venv')
     say('Installing analysis packages (PyTorch, transformers)…')
-    pip_install(HOME / '.transcribe-venv/bin/python', HOME / 'requirements-transcriber.txt')
+    pip_install(HOME / '.transcribe-venv/bin/python', HOME / 'requirements/transcriber.txt')
     run(HOME / '.transcribe-venv/bin/python', '-c', 'import torch, torchaudio, transformers, scipy, pretty_midi')
 
 

@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 import numpy as np
 ROOT=Path(__file__).resolve().parents[1]
-sys.path.insert(0,str(ROOT));sys.path.insert(0,str(ROOT/'model'));sys.path.insert(0,str(ROOT/'tests'))
+sys.path.insert(0,str(ROOT/'app'));sys.path.insert(0,str(ROOT/'model'));sys.path.insert(0,str(ROOT/'tests'))
 import torch_checkpoint
 import song_continuation as sc
 from test_song_continuation import studio_server

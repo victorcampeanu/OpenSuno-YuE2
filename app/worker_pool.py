@@ -29,7 +29,7 @@ class WorkerPool:
             env = {**os.environ, 'PYTHONUNBUFFERED': '1', 'PYTORCH_ENABLE_MPS_FALLBACK': '1',
                    'HF_HUB_OFFLINE': '1', 'TRANSFORMERS_OFFLINE': '1',
                    'YUE2_PARENT_PID': str(os.getpid()), 'PYTHONUTF8': '1'}
-            proc = subprocess.Popen([str(python), str(self.root / 'resident_worker.py')],
+            proc = subprocess.Popen([str(python), str(self.root / 'app/resident_worker.py')],
                                     stdin=subprocess.PIPE, stdout=subprocess.DEVNULL,
                                     stderr=subprocess.DEVNULL, text=True, env=env, start_new_session=True)
             self.workers[key] = proc

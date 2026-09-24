@@ -3,7 +3,7 @@ import sys,types,unittest
 from dataclasses import dataclass
 from pathlib import Path
 
-sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]/'app'))
 import mlx_continuation
 from song_continuation import CONTEXT
 

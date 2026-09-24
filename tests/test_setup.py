@@ -15,7 +15,7 @@ from unittest.mock import patch
 import requests
 from fastapi.testclient import TestClient
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+sys.path.insert(0,str(ROOT/'app'))
 from model_downloads import ModelDownloads
 from studio_fixture import studio_root, load_studio
 PAYLOAD = b'fixture-model-data' * 1000
@@ -55,7 +55,8 @@ class DownloadsTest(unittest.TestCase):
         self.asset = dict(repo='fixture/model', revision='abc', file='model.safetensors',
                           path='model/8bit/model.safetensors', size=len(PAYLOAD),
                           sha256=hashlib.sha256(PAYLOAD).hexdigest())
-        (self.root/'model-assets.json').write_text(json.dumps([self.asset]))
+        (self.root/'config').mkdir()
+        (self.root/'config/model-assets.json').write_text(json.dumps([self.asset]))
         self.manager = ModelDownloads(self.root)
         self.target = self.root/self.asset['path']
         self.target.parent.mkdir(parents=True)
@@ -124,7 +125,7 @@ class DownloadsTest(unittest.TestCase):
         self.assertIn('disk space', self.manager.snapshot()['message'])
         self.get.assert_not_called()
     def test_bf16_download_excludes_optional_model_and_analysis(self):
-        self.manager.assets = json.loads((ROOT/'model-assets.json').read_text())
+        self.manager.assets = json.loads((ROOT/'config/model-assets.json').read_text())
         with patch.object(self.manager, 'download') as download, patch('model_downloads.shutil.disk_usage', return_value=shutil._ntuple_diskusage(10**12, 0, 10**12)):
             self.manager.run('bf16')
         paths = [call.args[0]['path'] for call in download.call_args_list]
@@ -139,7 +140,7 @@ class DownloadsTest(unittest.TestCase):
             self.manager.start('invalid')
 
     def test_missing_download_unions_offered_packages(self):
-        self.manager.assets = json.loads((ROOT/'model-assets.json').read_text())
+        self.manager.assets = json.loads((ROOT/'config/model-assets.json').read_text())
         missing = self.manager.selected_assets('missing')
         paths = [a['path'] for a in missing]
         self.assertEqual(len(paths), len(set(paths)))
@@ -161,10 +162,10 @@ class DownloadsTest(unittest.TestCase):
         self.assertEqual([call.args[0]['path'] for call in download.call_args_list], paths)
 
     def test_lora_packages_download_separately_from_models(self):
-        shutil.copy2(ROOT/'lora-assets.json', self.root/'lora-assets.json')
-        shutil.copy2(ROOT/'model-assets.json', self.root/'model-assets.json')
+        shutil.copy2(ROOT/'config/lora-assets.json', self.root/'config/lora-assets.json')
+        shutil.copy2(ROOT/'config/model-assets.json', self.root/'config/model-assets.json')
         manager = ModelDownloads(self.root)
-        catalog = json.loads((ROOT / 'lora-assets.json').read_text())
+        catalog = json.loads((ROOT/'config/lora-assets.json').read_text())
         self.assertEqual([item['id'] for item in manager.lora_catalog], [item['id'] for item in catalog])
         self.assertIn('lora-mltnt-frontline', manager.lora_ids)
         self.assertIn('lora-qwwl-mehfil', manager.lora_ids)
@@ -204,8 +205,8 @@ class DownloadsTest(unittest.TestCase):
         self.assertEqual([call.args[0]['path'] for call in download.call_args_list], ['loras/Old School Hip-Hop.safetensors'])
 
     def test_packages_download_at_the_same_time(self):
-        shutil.copy2(ROOT/'lora-assets.json', self.root/'lora-assets.json')
-        shutil.copy2(ROOT/'model-assets.json', self.root/'model-assets.json')
+        shutil.copy2(ROOT/'config/lora-assets.json', self.root/'config/lora-assets.json')
+        shutil.copy2(ROOT/'config/model-assets.json', self.root/'config/model-assets.json')
         manager = ModelDownloads(self.root)
         barrier = threading.Barrier(3)
         seen = []
@@ -253,8 +254,8 @@ class DownloadsTest(unittest.TestCase):
         self.assertEqual(calls, ['lora-mothersuperior-v3'])
 
     def test_download_all_loras_starts_every_missing_adapter(self):
-        shutil.copy2(ROOT/'lora-assets.json', self.root/'lora-assets.json')
-        shutil.copy2(ROOT/'model-assets.json', self.root/'model-assets.json')
+        shutil.copy2(ROOT/'config/lora-assets.json', self.root/'config/lora-assets.json')
+        shutil.copy2(ROOT/'config/model-assets.json', self.root/'config/model-assets.json')
         manager = ModelDownloads(self.root)
         lora_paths = [a['path'] for a in manager.selected_assets('loras')]
         self.assertTrue(lora_paths)
@@ -371,7 +372,7 @@ class FirstRunTest(unittest.TestCase):
                 start.assert_called_once_with('loras')
             self.assertEqual(client.post('/api/models/download?model=nope', headers=headers).status_code, 400)
             self.assertFalse(config['downloads']['packages']['missing']['ready'])
-            catalog = json.loads((ROOT / 'lora-assets.json').read_text())
+            catalog = json.loads((ROOT/'config/lora-assets.json').read_text())
             self.assertEqual([p['name'] for p in config['downloads']['lora_packages']],
                              [item['name'] for item in catalog])
             self.assertTrue(any(p['id'] == 'lora-mltnt-frontline' for p in config['downloads']['lora_packages']))

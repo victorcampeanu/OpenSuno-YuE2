@@ -28,8 +28,8 @@ class ModelDownloads:
         self.link_shared()
 
     def load_assets(self):
-        assets = json.loads((self.root / 'model-assets.json').read_text())
-        catalog_path = self.root / 'lora-assets.json'
+        assets = json.loads((self.root / 'config/model-assets.json').read_text())
+        catalog_path = self.root / 'config/lora-assets.json'
         catalog = json.loads(catalog_path.read_text()) if catalog_path.is_file() else []
         for item in catalog:
             asset = {key: item[key] for key in self.ASSET_KEYS}

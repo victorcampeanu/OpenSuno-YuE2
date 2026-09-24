@@ -28,7 +28,7 @@ import style_ai
 from model_downloads import ModelDownloads
 from worker_pool import WorkerPool
 
-ROOT=Path(__file__).resolve().parent
+ROOT=Path(__file__).resolve().parents[1]
 PROTOCOL=2
 JOBS=ROOT/'.node-jobs'
 UP=ROOT/'uploads'  # worker.py reads recordings from ROOT/uploads

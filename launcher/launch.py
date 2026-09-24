@@ -38,13 +38,13 @@ def start_server():
             return
         python = ROOT / '.venv/bin/python'
         if not python.is_file():
-            raise RuntimeError('Run Install OpenSuno.command in the project folder first.')
+            raise RuntimeError('Run scripts/Install OpenSuno.command in the project folder first.')
         LOGS.mkdir(parents=True, exist_ok=True)
         plist = SUPPORT / 'server.plist'
         settings = {
             'Label': LABEL,
             'ProgramArguments': [str(python), '-u', '-c',
-                'import server, uvicorn; uvicorn.run(server.app, host="127.0.0.1", '
+                'import sys; sys.path.insert(0, "app"); import server, uvicorn; uvicorn.run(server.app, host="127.0.0.1", '
                 'port=7862, timeout_graceful_shutdown=2, access_log=False)'],
             'WorkingDirectory': str(ROOT),
             # A source install renders here and finds its Homebrew ffmpeg; the app build leaves that to the node.

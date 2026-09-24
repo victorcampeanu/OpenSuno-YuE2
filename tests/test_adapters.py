@@ -3,7 +3,7 @@ import sys, tempfile, unittest
 from pathlib import Path
 import numpy as np
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT)); sys.path.insert(0, str(ROOT / 'model'))
+sys.path.insert(0,str(ROOT/'app')); sys.path.insert(0, str(ROOT / 'model'))
 try:
     import mlx.core as mx
     import mlx.nn as nn
