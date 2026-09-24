@@ -1,0 +1,4 @@
+# SheetSage2 verifies these upstream MERT files byte-for-byte before loading.
+# Keep their original bytes when checking out on Windows with core.autocrlf.
+mert/configuration_mert2.py text eol=lf
+mert/modeling_mert2.py text eol=lf

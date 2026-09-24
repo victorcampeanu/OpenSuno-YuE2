@@ -1,0 +1,194 @@
+[
+  {
+    "repo": "ahmadw/YuE2-3B-MLX",
+    "revision": "fe0a9050fd658257b486b880422d8872ee1f81e3",
+    "file": "8bit/qwen.tiktoken",
+    "path": "model/8bit/qwen.tiktoken",
+    "size": 2561218,
+    "sha256": "b2b1b8dfb5cc5f024bafc373121c6aba3f66f9a5a0269e243470a1de16a33186"
+  },
+  {
+    "repo": "ahmadw/YuE2-3B-MLX",
+    "revision": "fe0a9050fd658257b486b880422d8872ee1f81e3",
+    "file": "8bit/vae.safetensors",
+    "path": "model/8bit/vae.safetensors",
+    "size": 265441814,
+    "sha256": "dc7bea8e4f8e764be6ee2ce3291606a5381aaa20f5c4eb26e86ca81dd1eeac6e"
+  },
+  {
+    "repo": "ahmadw/YuE2-3B-MLX",
+    "revision": "fe0a9050fd658257b486b880422d8872ee1f81e3",
+    "file": "bf16/model.safetensors",
+    "path": "model/bf16/model.safetensors",
+    "size": 7261441586,
+    "sha256": "e6012e94aca961eebc2f57ae0c5417b1f40125c33c41e5f3a6ca0b28982361f7"
+  },
+  {
+    "repo": "m-a-p/SheetSage2",
+    "revision": "eab522a8168e8b8b8c4856bf8609cd86198f01fe",
+    "file": "model.safetensors",
+    "path": "transcriber/model.safetensors",
+    "size": 228738564,
+    "sha256": "b235f68091a5f5b644000f2b5acb57d1e70432aca2b34ab1b9cf27236e1f4274"
+  },
+  {
+    "repo": "m-a-p/MERT-v2-FullSong",
+    "revision": "d8ba1c745e733b3908ce6ad16ebeb17ac7600a42",
+    "file": "model.safetensors",
+    "path": "mert/model.safetensors",
+    "size": 2529812848,
+    "sha256": "e6dd2ab187d6dd62b6521cd7d8f932e237acf0c5757745a7232082e28391350d"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "LICENSE",
+    "path": "model/cuda/backbone/LICENSE",
+    "size": 20309,
+    "sha256": "060985741d20e70613b4c189c7de106cabd3fb2109fbbfb6d705c9d619417dd0"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "THIRD_PARTY_NOTICES.md",
+    "path": "model/cuda/backbone/THIRD_PARTY_NOTICES.md",
+    "size": 793,
+    "sha256": "14d3fd9f6fee86b4260b69b0979735b99ffec8c6b4db254567047a4215cd9af3"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "config.json",
+    "path": "model/cuda/backbone/config.json",
+    "size": 959,
+    "sha256": "ad3477bbef890bf98ae196c1e4b44779494a6231c4ab66f32708eabadf265329"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "generation_config.json",
+    "path": "model/cuda/backbone/generation_config.json",
+    "size": 204,
+    "sha256": "ccc842772f029049fadf9b288393bcdd9f79271b361c0f1875ec1218e4ba5170"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "licenses/SnakeBeta-NVIDIA-MIT.txt",
+    "path": "model/cuda/backbone/licenses/SnakeBeta-NVIDIA-MIT.txt",
+    "size": 1076,
+    "sha256": "da9858d516047d82096d01c112a61bd67f26d289039464d668a1d45f91738ecc"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "licenses/stable-audio-tools-MIT.txt",
+    "path": "model/cuda/backbone/licenses/stable-audio-tools-MIT.txt",
+    "size": 1069,
+    "sha256": "a1fac33b7bcd791b74fb33aeb439f825e7277e239fc119fb7d2ab6f084a0c101"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "model.safetensors",
+    "path": "model/cuda/backbone/model.safetensors",
+    "size": 7261441640,
+    "sha256": "1d55c42c1a9875c34f5d736e15078449992b044e807ce2a138e6cf289a1e59e9"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "qwen.tiktoken",
+    "path": "model/cuda/backbone/qwen.tiktoken",
+    "size": 2561218,
+    "sha256": "b2b1b8dfb5cc5f024bafc373121c6aba3f66f9a5a0269e243470a1de16a33186"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "weights_manifest.json",
+    "path": "model/cuda/backbone/weights_manifest.json",
+    "size": 179,
+    "sha256": "2296f82c29dcb11aeefde07e216403a32fc86c8f6da2ec15a70102abfd936a93"
+  },
+  {
+    "repo": "m-a-p/YuE2-3B",
+    "revision": "29b3558dd46954a0cd9021dc76d5c91864a0f1c7",
+    "file": "yue2_generation_config.json",
+    "path": "model/cuda/backbone/yue2_generation_config.json",
+    "size": 466,
+    "sha256": "203830cebde6e3644eb291925362990d198e66c3b6006cd11f1aaa21904bcc61"
+  },
+  {
+    "repo": "m-a-p/YuE2-Vae",
+    "revision": "9a94e1d0ea9f8087e98f77fa88df4a4068104d2a",
+    "file": "LICENSE",
+    "path": "model/cuda/vae/LICENSE",
+    "size": 20309,
+    "sha256": "060985741d20e70613b4c189c7de106cabd3fb2109fbbfb6d705c9d619417dd0"
+  },
+  {
+    "repo": "m-a-p/YuE2-Vae",
+    "revision": "9a94e1d0ea9f8087e98f77fa88df4a4068104d2a",
+    "file": "THIRD_PARTY_NOTICES.md",
+    "path": "model/cuda/vae/THIRD_PARTY_NOTICES.md",
+    "size": 793,
+    "sha256": "14d3fd9f6fee86b4260b69b0979735b99ffec8c6b4db254567047a4215cd9af3"
+  },
+  {
+    "repo": "m-a-p/YuE2-Vae",
+    "revision": "9a94e1d0ea9f8087e98f77fa88df4a4068104d2a",
+    "file": "config.json",
+    "path": "model/cuda/vae/config.json",
+    "size": 1378,
+    "sha256": "f0191bb9694009956de44e0c361a6f1334760be4c8f848e599bde242a54a0970"
+  },
+  {
+    "repo": "m-a-p/YuE2-Vae",
+    "revision": "9a94e1d0ea9f8087e98f77fa88df4a4068104d2a",
+    "file": "licenses/SnakeBeta-NVIDIA-MIT.txt",
+    "path": "model/cuda/vae/licenses/SnakeBeta-NVIDIA-MIT.txt",
+    "size": 1076,
+    "sha256": "da9858d516047d82096d01c112a61bd67f26d289039464d668a1d45f91738ecc"
+  },
+  {
+    "repo": "m-a-p/YuE2-Vae",
+    "revision": "9a94e1d0ea9f8087e98f77fa88df4a4068104d2a",
+    "file": "licenses/stable-audio-tools-MIT.txt",
+    "path": "model/cuda/vae/licenses/stable-audio-tools-MIT.txt",
+    "size": 1069,
+    "sha256": "a1fac33b7bcd791b74fb33aeb439f825e7277e239fc119fb7d2ab6f084a0c101"
+  },
+  {
+    "repo": "m-a-p/YuE2-Vae",
+    "revision": "9a94e1d0ea9f8087e98f77fa88df4a4068104d2a",
+    "file": "model.safetensors",
+    "path": "model/cuda/vae/model.safetensors",
+    "size": 530512720,
+    "sha256": "807ce9d5149fa27c5ad3e6582058469852e908f6c5acc8c8aa338e7ab7751346"
+  },
+  {
+    "repo": "m-a-p/YuE2-Vae",
+    "revision": "9a94e1d0ea9f8087e98f77fa88df4a4068104d2a",
+    "file": "weights_manifest.json",
+    "path": "model/cuda/vae/weights_manifest.json",
+    "size": 178,
+    "sha256": "017d64a4d288217a43fcac3866a0e1d55f796fa891d4dfb6de0bd170ab750026"
+  },
+  {
+    "repo": "Mothersuperior/yue2-mothersuperior-realaudio-tokenizer-v4",
+    "revision": "e2e63d859f3af879baf1b4d4e9f22d1eeda6fde5",
+    "file": "tokenizer_head_joint_v9.safetensors",
+    "path": "tokens/tokenizer_head_joint_v9.safetensors",
+    "size": 171278808,
+    "sha256": "06440f25605c6c12c4e517ef033d7b70b8d9e961b3b06aa3848b1f8028fd7eb8"
+  },
+  {
+    "repo": "Mothersuperior/yue2-mothersuperior-realaudio-tokenizer-v4",
+    "revision": "e2e63d859f3af879baf1b4d4e9f22d1eeda6fde5",
+    "file": "nar_lora_joint_v9.safetensors",
+    "path": "tokens/nar_lora_joint_v9.safetensors",
+    "size": 140560592,
+    "sha256": "585f303da1d5252d228d1e8ac6d4c4d11d970df9297406935cc8bdafa49cfa7e"
+  }
+]

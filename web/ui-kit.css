@@ -1,0 +1,61 @@
+/* Studio chrome shared by Create, Cover, and analysis. */
+@keyframes os-spin{to{transform:rotate(360deg)}}
+@keyframes os-dot{0%,100%{opacity:.2;transform:translateY(0)}50%{opacity:1;transform:translateY(-3px)}}
+.os-tasks{display:flex;flex-direction:column;gap:6px;margin-top:12px}
+.os-tasks.capsules{flex-direction:row;flex-wrap:wrap}
+.os-task{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid #2e2e34;border-radius:22px;background:#151517;font-size:12px;min-width:0}
+.os-tasks:not(.capsules) .os-task{border-radius:12px}
+.os-task b{font-weight:500;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.os-task small{margin-left:auto;color:var(--muted);white-space:nowrap;font-size:11px}
+.os-task .os-badge{margin-left:8px;padding:2px 8px;border-radius:10px;font-size:10px;background:#2a3a30;color:#9ad4b0}
+.os-task.running .os-badge{background:#3a2a34;color:#ffc0de}
+.os-task.failed .os-badge{background:#3a2228;color:#ffb1c2}
+.os-task.waiting .os-badge{background:#2a2a30;color:#9a9aa2}
+.os-mark{width:16px;height:16px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;background:#2a2a30;color:#c2c2c8}
+.os-task.done .os-mark{background:#2a3a30;color:#9ad4b0}
+.os-task.running .os-mark{background:#3a2a34;color:#ffc0de}
+.os-task.failed .os-mark{background:#3a2228;color:#ffb1c2}
+/* Generation steps: a quiet checklist, no capsules or status badges. */
+.os-tasks.plain{gap:0;margin-top:9px}
+.os-tasks.plain .os-task{border:0;background:transparent;border-radius:0;padding:5px 0;color:#7e7e88}
+.os-tasks.plain .os-task.done{color:#a9a9b2}
+.os-tasks.plain .os-task.running{color:#f3f1ed}
+.os-tasks.plain .os-mark{background:transparent;border:1.5px solid #34343c;width:14px;height:14px}
+.os-tasks.plain .os-task.done .os-mark{background:transparent;border-color:transparent;color:#9ad4b0;font-size:12px}
+.os-tasks.plain .os-task.running .os-mark{border-color:var(--pink);animation:os-pulse 1.4s ease-in-out infinite;color:var(--pink)}
+.os-tasks.plain .os-task.failed .os-mark{background:transparent;border-color:#7a3a48;color:#ffb1c2}
+@keyframes os-pulse{0%,100%{opacity:.45}50%{opacity:1}}
+
+
+
+
+.analysis-metrics>div{background:#111113;border:1px solid #2e2b31;border-radius:10px;padding:10px 11px}
+
+#commandSearch{width:min(520px,calc(100vw - 32px));padding:0;border:1px solid #36363b;border-radius:16px;background:#19191d;color:var(--text)}
+#commandSearch::backdrop{background:#0008}
+#commandSearch input{width:100%;border:0!important;background:transparent!important;padding:14px 16px!important;font-size:14px!important}
+#commandSearchResults{max-height:min(360px,50vh);overflow:auto;padding:0 8px 10px}
+#commandSearchResults button{display:block;width:100%;text-align:left;padding:10px 12px;border-radius:10px;font-size:13px}
+#commandSearchResults button:hover,#commandSearchResults button[aria-selected=true]{background:#26262c}
+#commandSearchResults small{display:block;color:var(--muted);font-size:11px;margin-top:3px}
+
+#controls>.block-content{padding-left:8px;padding-right:8px}
+#controls .block-content>.two-cols,#controls .seed-row{background:#141416;border:1px solid #2e2e34;border-radius:12px;padding:12px;margin-bottom:10px}
+#controls .instrumental-toggle{padding:10px 12px;background:#141416;border:1px solid #2e2e34;border-radius:12px;margin-bottom:10px}
+.seed-row{display:flex;align-items:flex-end;gap:12px}
+.seed-row>label:first-child{flex:1;min-width:0}
+.seed-row>.instrumental-toggle{flex:none;padding:0 0 8px;gap:8px;width:auto}
+#controls .seed-row>.instrumental-toggle{padding:0 0 10px;background:none;border:0;margin:0;border-radius:0}
+#advanced{margin-top:6px}
+
+.sidebar nav{position:relative}
+.sidebar nav .nav-glide{position:absolute;z-index:0;left:0;right:0;height:48px;border-radius:999px;background:#222225;opacity:0;pointer-events:none;transform:translateY(var(--glide-y,0));transition:transform .22s cubic-bezier(.22,1,.36,1),opacity .15s}
+.sidebar nav .nav-item{position:relative;z-index:1}
+.sidebar nav .nav-item:hover:not(.active),.sidebar nav .nav-item:focus-visible:not(.active){background:transparent}
+.sidebar nav .nav-item.active{background:linear-gradient(100deg,#f58418 0%,#f54868 52%,#fa389a 100%);color:#fff}
+.sidebar nav .nav-item.active .nav-count{color:#ffe6f2}
+.sidebar nav:hover .nav-glide,.sidebar nav:focus-within .nav-glide{opacity:1}
+
+@media(prefers-reduced-motion:reduce){
+ .sidebar nav .nav-glide,.os-tasks.plain .os-task.running .os-mark{animation:none;transition:none}
+}
