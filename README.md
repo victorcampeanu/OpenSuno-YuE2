@@ -14,6 +14,84 @@ machine. An independent interface; not affiliated with Suno.
 - [MODELS.md](MODELS.md): which models to download, how (from the page or by hand) and how to use
   LoRAs.
 
+## Features
+
+Details for each are in [FEATURES.md](FEATURES.md).
+
+**Create songs**
+
+- Songs from lyrics and a style line, with a plan mode: *Melody and Chords* (the model writes a
+  chord-annotated score first), *Melody Only* or *No Plan*.
+- **Instrumental** mode that is actually instrumental: the sung melody moves to an instrument and
+  the section tags still shape the song.
+- **Voice**: Any, Male, Female or Duet.
+- Musically named controls: **Composition**, **Weirdness**, **Style Influence**, **Repetition** and
+  **Audio Steps**, plus a maximum duration, up to 8 versions per run and a lockable seed.
+- **Add Style**: 73 style presets (from SongScribe) with blending, era, texture and mood modifiers,
+  and a builder for genre, voice, instruments, mood, tempo and production.
+- **Ask AI** writes a style line from a short description (OpenAI, optional).
+- **Lyrics helpers**: **Add Tag** inserts `[Verse]`, `[Chorus]` and other section tags; a
+  structure check fixes malformed tags in one click and warns when the lyrics won't fit the
+  duration; **Find lyrics** searches LRCLIB by title and artist.
+- **Album art** for every song (OpenAI, optional).
+
+**Cover / Remix an uploaded recording**
+
+- Upload WAV, MP3, FLAC, M4A, AIFF, OGG or AAC (up to 200 MB / 30 minutes) and trim it on a waveform.
+- The melody (or melody and chords) is transcribed with SheetSage2 and MERT-v2. The analysis is
+  cached, so it runs once per clip.
+- **Arrange with the Model** keeps the melody and heard instrumental lines, and writes in-tune chords
+  on every bar plus its own lines in the new style.
+- **Vocal Range** moves the melody to where the chosen voice sings it.
+- **Continue this recording** keeps the audio up to a point and writes what follows (Audio input
+  package).
+- Title and lyrics are prefilled from tags embedded in the file. Every upload is kept in the library,
+  badged **UPLOADED**.
+
+**Work with finished songs**
+
+- **Extend** a song, or **Regenerate from here** at a chosen bar, on a timeline with bar snapping.
+- **Edit** the arrangement at the score level: style, tempo, harmony (keep chords, new chords, jazz
+  sevenths) and structure (move, repeat, remove or shorten sections).
+- **Re-render** from the saved music tokens with more audio steps or a different sound LoRA, which
+  makes a fair A/B test.
+- **Adjust Speed** with or without keeping the pitch.
+- **Use these settings** restores any version exactly, seed included.
+
+**LoRA adapters**
+
+- Two slots: **Writes** (style, genre and artist adapters) and **Renders** (sound-only adapters, such
+  as the Real-audio decoder v9). They stack.
+- A catalog of community LoRAs downloads from **Models → LoRAs**. Choosing one fills in its trigger
+  word and recommended settings.
+- Any YuE2 LoRA in Hugging Face, PEFT, ComfyUI or Sound & Vision layout can be dropped into `loras/`.
+- On the Mac, adapters are folded into the weights, so a LoRA costs no speed.
+
+**Library**
+
+- A queue: submit while a song renders and the new one waits its turn.
+- Projects (workspaces), favorites, rename, search, filters and bulk select.
+- WAV and MP3 downloads.
+- Deleted songs go to a trash folder, never erased.
+- Prompts can be saved and reused.
+
+**Models and performance**
+
+- One-click model downloads from the **Models** page: resumable, verified with SHA-256, pinned to
+  exact Hugging Face revisions. See [MODELS.md](MODELS.md).
+- Models stay loaded between songs, so the second song starts in seconds.
+- MLX speed-ups on Apple Silicon: a sliced output head, batched classifier-free guidance and fewer
+  host syncs.
+- Windows / NVIDIA support with the official YuE2 checkpoint (CUDA BF16, experimental FP8).
+
+**Setup and privacy**
+
+- Mac disk-image installer for the Studio, the render node or both, with a menu bar app for the
+  node.
+- **Render node**: render on another machine's GPU while the Studio runs elsewhere.
+- Everything runs locally. The server listens on `127.0.0.1` only, and recordings are never uploaded.
+  The only network calls are model downloads, LRCLIB lyric search, and OpenAI when a key is set.
+
 ## Install
 
 Allow at least 20 GB of free disk space for weights and Python environments. Tested on an M4 Pro
@@ -104,27 +182,10 @@ Node API (`/v1`, bearer token): `GET health`, `POST models/download?model=`, `PO
 (multipart: `request` JSON, `inputs` side files, `uploads` recordings), `GET jobs/{id}?log_offset=`,
 `GET jobs/{id}/files/{name}`, `POST jobs/{id}/cancel`, `DELETE jobs/{id}`.
 
-## What you can do
+## Logs and data
 
-Details for each are in [FEATURES.md](FEATURES.md).
-
-- **Create** a song from lyrics and a style. **Add Style** offers 73 presets (from SongScribe,
-  MIT) with blending and modifiers; the sparkles button asks OpenAI for a style line (key in
-  **Settings**, `OPENAI_API_KEY`, or a local `.openai-key` file; never committed). Songs get album
-  art from OpenAI when a key is set.
-- **Cover / Remix** an uploaded recording: trim, analyse, keep the melody or melody and chords, and
-  let the model **arrange** the rest in the new style. **Vocal Range** moves the melody to the
-  chosen voice. **Continue this recording** keeps the audio up to a point and writes what follows.
-- **Finished songs**: re-render with more audio steps, **Extend** or **Regenerate from here** at a
-  bar, **Edit** the arrangement (style, tempo, harmony, structure) at the score level, **Adjust
-  Speed** (ffmpeg, with or without keeping pitch), favorites, rename, WAV/MP3 downloads, projects.
-- **LoRA adapters**: community YuE2 LoRAs in `loras/` (HF, PEFT or ComfyUI layout) appear under
-  **More Options → LoRA** with a strength; applied to that song only and saved with it. See
-  `loras/README.md`.
-- **Find lyrics** searches LRCLIB by title and artist; tags embedded in an uploaded file prefill the
-  title and lyrics.
-- Songs are queued while one renders; models stay resident between songs and are released after the
-  last page closes.
+The OpenAI key for Ask AI and album art goes in **Settings**, `OPENAI_API_KEY`, or a local
+`.openai-key` file, which is never committed.
 
 Logs are in `~/Library/Logs/OpenSuno/server.log` on a Mac. The server listens only on `127.0.0.1`;
 recordings and results stay in `uploads/` and `library/`.
