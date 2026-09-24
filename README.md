@@ -3,7 +3,7 @@
 Local music generation with a browser interface for the [YuE2](https://huggingface.co/m-a-p/YuE2-3B) model on Apple Silicon and Windows/NVIDIA:
 lyrics and style prompts, instrumental mode, covers of uploaded recordings, song editing and
 extension, community LoRAs, a library with projects, and an optional render node on another
-machine. An independent interface; not affiliated with Suno.
+machine.
 
 ![Library with finished songs, their LoRAs and settings, and the song details panel](docs/screenshots/library.jpg)
 
@@ -91,6 +91,50 @@ Details for each are in [FEATURES.md](FEATURES.md).
 - **Render node**: render on another machine's GPU while the Studio runs elsewhere.
 - Everything runs locally. The server listens on `127.0.0.1` only, and recordings are never uploaded.
   The only network calls are model downloads, LRCLIB lyric search, and OpenAI when a key is set.
+
+## Hints
+
+### Which models to download
+
+- **Generator:** **YuE2 BF16** on a Mac, **YuE2 CUDA BF16** on Windows / NVIDIA. CUDA FP8 is
+  experimental and was slower in testing.
+- **Cover analysis** only if you want covers of your own recordings. Add **Audio input** on top only
+  for *Continue this recording*.
+- **Real-audio decoder v9** under Models → LoRAs is the one LoRA worth having for every song: it gives
+  a fuller, more produced sound.
+
+### Recommended selection for a new song
+
+- **Renders:** Real-audio decoder v9 at 100%. It only changes the sound, never what is written, so it
+  combines with anything.
+- **Writes:** None for a general song. Pick a style LoRA only when you want its genre, and let its
+  card fill in the settings. Start the style line with its trigger word (`sv_oldschoolhiphop`,
+  `mltnt`, `chnsn`, `qwwl`, `drksf`, `cnzn`).
+  - **YuE2 instrumental (Mothersuperior v3):** Instrumental on, Melody and Chords, 70% strength.
+    100% tends to repeat patterns.
+  - **Old School Hip-Hop:** 100%, No Plan, Style Influence 1.0.
+  - **QWWL / DRKSF (qawwali):** always No Plan. Melody and Chords pulls them back to pop.
+  - **MLTNT, CHNSN, CNZN:** keep the card's settings (mostly 100%; MLTNT Fusion uses 150%) and
+    write lyrics in the pack's language: Jamaican Patois, French or Italian.
+- **Plan:** Melody and Chords (the default) gives the most structured songs.
+- **Style Influence:** 1.2. Raise it toward 1.5 if the genre, instruments or voice are ignored.
+- **Repetition:** set it to *Less* if a song gets stuck in a loop.
+- **Audio Steps:** 2 is enough to judge a song. Re-render the ones you like with more steps later.
+  That cleans the sound without changing the music.
+
+### Recommended selection for a cover
+
+- **Renders:** Real-audio decoder v9 at 100%.
+- **Writes:** None. On a cover a style LoRA's writing half is switched off after the arrangement step,
+  so the melody isn't rewritten into a loop. What remains only tints the sound. The instrumental v3
+  adapter has no sound half, so it does nothing on a cover.
+- **Style** is the main control: write the new genre, instruments, voice and tempo there in plain
+  words. Trigger words have no effect on covers.
+- Keep **Arrange with the Model** on, set **Preserve** to melody (or melody and chords to keep the
+  original harmony), and set **Vocal Range** to *Match the Voice* with the Voice you want.
+- Write lyrics with section tags that follow the recording's form. Lyrics are sung as written; they
+  are not taken from the audio.
+- For a *new* song in a LoRA's genre, use Create instead of Cover.
 
 ## Install
 
