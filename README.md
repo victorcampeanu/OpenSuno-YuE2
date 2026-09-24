@@ -5,9 +5,9 @@ lyrics and style prompts, instrumental mode, covers of uploaded recordings, song
 extension, community LoRAs, a library with projects, and an optional render node on another
 machine.
 
-![Library with finished songs, their LoRAs and settings, and the song details panel](docs/screenshots/library.jpg)
+![Library with finished songs, their LoRAs and settings, and the song details panel](docs/screenshots/library.webp)
 
-![Cover mode: Renders LoRA, voice, seed and sliders next to the library](docs/screenshots/cover.jpg)
+![Cover mode: voice, seed and sliders next to the library](docs/screenshots/cover.webp)
 
 - [opensuno.org](https://opensuno.org): project website.
 - [START-HERE.md](START-HERE.md): how to use the page and what each control does.
