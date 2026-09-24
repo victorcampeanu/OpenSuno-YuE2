@@ -58,7 +58,7 @@ h2{font-size:clamp(30px,4vw,44px);letter-spacing:-.03em;line-height:1.1;margin:0
 .card h3{margin:0 0 8px;font-size:18px}
 .card p{margin:0;color:var(--muted);font-size:15px}
 .split{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
-.split img{width:100%;border-radius:14px;border:1px solid var(--line)}
+.split img{display:block;width:100%;height:auto;aspect-ratio:1024/755;object-fit:cover;border-radius:14px;border:1px solid var(--line)}
 ul.ticks{list-style:none;padding:0;margin:0}
 ul.ticks li{position:relative;padding-left:30px;margin:12px 0;color:var(--muted)}
 ul.ticks li b{color:var(--text)}
@@ -134,7 +134,7 @@ footer a{color:var(--muted)}
       <li><b>Sound LoRAs</b> like the Real-audio decoder v9 give a fuller, more produced render.</li>
     </ul>
   </div>
-  <img src="screenshots/cover.jpg" width="1024" height="559" loading="lazy" alt="OpenSuno cover mode with the Renders LoRA, voice and sliders">
+  <img src="screenshots/cover-panel.png" width="1024" height="755" loading="lazy" alt="OpenSuno cover mode with the voice, seed and sliders next to the library of covers">
 </div></section>
 
 <section id="install"><div class="wrap">
