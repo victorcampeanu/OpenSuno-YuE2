@@ -218,11 +218,13 @@ def continue_semantic(pipe, plan, codec_prompt, sampling, callbacks):
 
 
 class Pipeline(YuE2Pipeline):
-    def __init__(self, root, variant, report, cancel, lora=None, drop_ar_file=None):
+    def __init__(self, root, variant, report, cancel, lora=None, drop_ar_file=None, planner=None):
         # ``lora``: ``[(file, strength), ...]`` — the LoRA and the Sound LoRA folded in together when the model loads.
         # ``drop_ar_file``: on covers, fold that Writes adapter as decoder-only so the transcribed score cannot loop.
+        # ``planner``: ``(file, strength)`` when the Writes adapter's planner half has its own strength.
         self.report, self.cancel, self.root, self.lora = report, cancel, root, lora or []
         self.drop_ar_file = drop_ar_file or ''
+        self.planner = planner
         if not torch.cuda.is_available():
             raise RuntimeError('The official model requires an NVIDIA CUDA GPU.')
         total = torch.cuda.get_device_properties(0).total_memory / 2**30
@@ -250,10 +252,15 @@ class Pipeline(YuE2Pipeline):
                         delta = loras.drop_ar(delta)
                         if not delta['linears'] and not delta['io']:
                             continue
+                    if self.planner and name == self.planner[0]:
+                        delta, strength = loras.weighted(delta, strength, self.planner[1]), 1.0
+                        if not delta['linears'] and not delta['io']:
+                            continue
                     parts.append((delta, strength))
                 touched = loras.merge_torch(self._model, loras.combine(parts), 1.0) if parts else 0
                 for name, strength in self.lora:
-                    print(f'[lora] {name} at strength {strength:g}', flush=True)
+                    writing = f' (writing half at {self.planner[1]:g})' if self.planner and name == self.planner[0] else ''
+                    print(f'[lora] {name} at strength {strength:g}{writing}', flush=True)
                 if self.drop_ar_file:
                     print('[lora] Cover: decoder half of the Writes adapter only, so the transcribed melody does not loop', flush=True)
                 print(f'[lora] {touched} adapted layers', flush=True)
@@ -303,13 +310,16 @@ def run(root, jobdir, r, cache, report, cancel, save_meta, style, lyrics, start,
     import loras
     lora = loras.chosen(r)
     drop_ar_file = r.get('lora') or '' if r['kind'] == 'cover' else ''
-    key = variant + ''.join(f'+{name}@{strength:g}' for name, strength in lora) + ('+cover-decoder' if drop_ar_file else '')
+    planner_strength = loras.planner_of(r)
+    planner = (r['lora'], planner_strength) if planner_strength is not None else None
+    key = (variant + ''.join(f'+{name}@{strength:g}' for name, strength in lora)
+           + (f'+writing@{planner_strength:g}' if planner else '') + ('+cover-decoder' if drop_ar_file else ''))
     pipe = cache.get(key)
     if pipe is None:
         for old in list(cache.values()):
             if isinstance(old, Pipeline): old.close()
         for k in [k for k, v in cache.items() if isinstance(v, Pipeline)]: del cache[k]
-        pipe = cache[key] = Pipeline(root, variant, report, cancel, lora=lora, drop_ar_file=drop_ar_file or None)
+        pipe = cache[key] = Pipeline(root, variant, report, cancel, lora=lora, drop_ar_file=drop_ar_file or None, planner=planner)
     pipe.report, pipe.cancel = report, cancel
     if r.get('_preload'):
         pipe._load_model()

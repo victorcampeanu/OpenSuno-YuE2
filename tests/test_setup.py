@@ -161,6 +161,49 @@ class DownloadsTest(unittest.TestCase):
             self.manager.run('missing')
         self.assertEqual([call.args[0]['path'] for call in download.call_args_list], paths)
 
+    def test_artist_pack_defaults_follow_their_model_cards(self):
+        # becausereasons' cards give ComfyUI's strength_clip (the planner, "Writing strength" here) and strength_model
+        # (the decoder, "Strength") apart. (strength, writing strength, plan, style influence, composition, weirdness, cap)
+        base = (1.0, None, 'full', 1.0, 0.7, 1.0, 360)
+        expected = {
+            'lora-qtstrm-midnight': base, 'lora-qtstrm-velvet': base, 'lora-qtstrm-afterhours': base,
+            'lora-qtstrm-nocturne': base, 'lora-qtstrm-candlelight': base,
+            'lora-trbdr-broadside': base, 'lora-trbdr-lantern': base, 'lora-trbdr-hearth': base,
+            'lora-trbdr-ferryman': base, 'lora-trbdr-porch': base,
+            'lora-cnzn-sanremo': base, 'lora-cnzn-teatro': base, 'lora-cnzn-sussurro': base,
+            'lora-cnzn-notte': (1.0, 0.5, 'full', 1.0, 0.7, 1.0, 360),
+            'lora-cnzn-coro': (1.0, 0.5, 'full', 1.0, 0.7, 1.0, 360),
+            'lora-chnsn-rive-gauche': base, 'lora-chnsn-grand-boulevard': base, 'lora-chnsn-montmartre': base,
+            'lora-chnsn-cabaret': (1.0, 0.5, 'full', 1.0, 0.7, 1.0, 360),
+            'lora-mltnt-frontline': base, 'lora-mltnt-steppers': base, 'lora-mltnt-roots': base, 'lora-mltnt-chanter': base,
+            'lora-mltnt-soundclash': (1.0, 0.5, 'full', 1.0, 0.7, 1.0, 360),
+            'lora-mltnt-fusion': (1.5, 1.0, 'full', 1.4, 0.9, 1.2, 360),
+            'lora-qwwl-mehfil': (1.0, None, 'off', 1.0, 0.7, 1.0, 170),
+            'lora-drksf-midnight': (1.0, None, 'off', 1.0, 0.7, 1.0, 170),
+            'lora-blgr-rhodope': (1.0, None, 'full', 1.0, 0.7, 1.0, 300),
+            'lora-blgr-steppe': (1.5, None, 'full', 1.4, 0.9, 1.2, 300),
+            'lora-blgr-kargyraa': (1.5, None, 'full', 1.0, 0.7, 1.0, 300),
+        }
+        catalog = {item['id']: item for item in json.loads((ROOT/'config/lora-assets.json').read_text())}
+        for id, (strength, writing, plan, cfg, composition, weirdness, cap) in expected.items():
+            s = catalog[id]['settings']
+            self.assertEqual((s['lora_strength'], s.get('planner_strength'), s['cot'], s['cfg_scale'], s['abc_temperature'], s['temperature'], s['duration']),
+                             (strength, writing, plan, cfg, composition, weirdness, cap), id)
+            self.assertFalse(s['instrumental'], id)
+        for id, item in catalog.items():
+            for key in ('lora_strength', 'planner_strength'):
+                if key in item['settings']:
+                    self.assertTrue(0 <= item['settings'][key] <= 2, (id, key))
+            self.assertTrue(item['trigger'] == '' or item['prompt'].startswith(item['trigger'] + ','), id + ': the example style starts with its trigger word')
+            self.assertEqual(item['path'], 'loras/' + item['name'] + '.safetensors', id)
+        triggers = {item['family']: item['trigger'] for id, item in catalog.items() if id in expected and id not in ('lora-drksf-midnight',)}
+        self.assertEqual(triggers, {'QTSTRM - Quiet Storm R&B': 'qtstrm', 'TRBDR - Folk Troubadour': 'trbdr', 'CNZN - Canzone Italiana': 'cnzn',
+                                    'CHNSN - Chanson Francaise': 'chnsn', 'MLTNT - Militant Reggae': 'mltnt', 'QWWL / DRKSF - Qawwali': 'qwwl',
+                                    'BLGR - Bulgarian Voices': 'blgr'})
+        self.assertEqual(catalog['lora-drksf-midnight']['trigger'], 'drksf')
+        self.assertEqual(len({item['revision'] for item in catalog.values() if item['repo'] == 'becausereasons/yue2-cnzn-canzone-italiana'}), 1,
+                         'files of one repo are pinned to one revision')
+
     def test_lora_packages_download_separately_from_models(self):
         shutil.copy2(ROOT/'config/lora-assets.json', self.root/'config/lora-assets.json')
         shutil.copy2(ROOT/'config/model-assets.json', self.root/'config/model-assets.json')

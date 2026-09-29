@@ -174,6 +174,8 @@ class Job(BaseModel):
     # the LoRA shapes the writing (or anything), the Sound LoRA is a second slot meant for decoder adapters.
     lora:str=Field(default='',max_length=160)
     lora_strength:float=Field(default=1.0,ge=0,le=2)
+    # The LoRA's writing (planner) half on its own; unset means it follows lora_strength, which then also stays the decoder half.
+    planner_strength:float|None=Field(default=None,ge=0,le=2)
     sound_lora:str=Field(default='',max_length=160)
     sound_lora_strength:float=Field(default=1.0,ge=0,le=2)
     api_key:str=Field(default='',max_length=256,exclude=True)
@@ -523,6 +525,8 @@ class PromptSettings(BaseModel):
     abc_sampling:Sampling|None=None
     lora:str=Field(default='',max_length=160)
     lora_strength:float=Field(default=1.0,ge=0,le=2)
+    # The LoRA's writing (planner) half on its own; unset means it follows lora_strength, which then also stays the decoder half.
+    planner_strength:float|None=Field(default=None,ge=0,le=2)
     sound_lora:str=Field(default='',max_length=160)
     sound_lora_strength:float=Field(default=1.0,ge=0,le=2)
 
@@ -964,7 +968,7 @@ def create(r:Job):
             suffix=' · '+str(r.steps)+' steps'+(' · '+Path(sound).stem if sound else '')+(' · without '+Path(original['request']['lora']).stem if plain else '')
             if sound and not plain and sound==original['request'].get('lora'): raise HTTPException(400,'This song already uses '+repr(sound)+' as its LoRA; pick a different Sound LoRA')
             r=Job(**{**original['request'],'kind':'generate','edit_id':'','continue_source':'','continue_seconds':None,'continue_recording':False,'origin':None,'render_source':r.render_source,'render_candidate':r.render_candidate,'render_without_lora':plain,'steps':r.steps,'seed':candidate['seed'],'random_seed':False,'candidates':1,'abc':render_data['abc'],'title':original['title']+suffix,
-                     'sound_lora':sound,'sound_lora_strength':r.sound_lora_strength,**({'lora':'','lora_strength':1.0} if plain else {})})
+                     'sound_lora':sound,'sound_lora_strength':r.sound_lora_strength,**({'lora':'','lora_strength':1.0,'planner_strength':None} if plain else {})})
         r.origin=None
         continuation=None
         if r.continue_source:

@@ -14,7 +14,7 @@ function promptPayload(){
    steps:Number($('steps').value),
    semantic_sampling:r.semantic_sampling,
    abc_sampling:r.abc_sampling,
-   lora:r.lora||'',lora_strength:r.lora_strength??1,
+   lora:r.lora||'',lora_strength:r.lora_strength??1,planner_strength:r.lora?r.planner_strength??null:null,
    sound_lora:r.sound_lora||'',sound_lora_strength:r.sound_lora_strength??1
   }
  };
@@ -51,7 +51,7 @@ function applySavedPrompt(p){
   steps:p.settings?.steps??2,
   semantic_sampling:p.settings?.semantic_sampling||current.semantic_sampling,
   abc_sampling:p.settings?.abc_sampling||current.abc_sampling,
-  lora:p.settings?.lora||'',lora_strength:p.settings?.lora_strength??1,
+  lora:p.settings?.lora||'',lora_strength:p.settings?.lora_strength??1,planner_strength:p.settings?.planner_strength??null,
   sound_lora:p.settings?.sound_lora||'',sound_lora_strength:p.settings?.sound_lora_strength??1,
   edit_id:''
  });

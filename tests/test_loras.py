@@ -330,6 +330,40 @@ class CombineTest(unittest.TestCase):
         self.assertEqual(loras.chosen({'lora': 'a.safetensors', 'lora_strength': 0.7, 'sound_lora': 'b.safetensors'}),
                          [('a.safetensors', 0.7), ('b.safetensors', 1.0)])
 
+    def test_the_planner_half_can_have_its_own_strength(self):
+        request = {'lora': 'a.safetensors', 'lora_strength': 1.5, 'planner_strength': 1.0}
+        self.assertEqual(loras.planner_of(request), 1.0)
+        self.assertIsNone(loras.planner_of({'lora': 'a.safetensors', 'lora_strength': 1.5}), 'unset follows Strength as before')
+        self.assertIsNone(loras.planner_of({'lora': 'a.safetensors', 'planner_strength': None}))
+        self.assertIsNone(loras.planner_of({'planner_strength': 0.5}), 'without a writing LoRA there is nothing to weigh')
+        self.assertEqual(loras.chosen(request), [('a.safetensors', 1.5)], 'Strength stays the decoder half')
+        self.assertEqual(loras.chosen({'lora': 'a.safetensors', 'lora_strength': 0, 'planner_strength': 0.5}), [('a.safetensors', 0.0)],
+                         'a writing-only adapter is still applied')
+        self.assertEqual(loras.chosen({'lora': 'a.safetensors', 'lora_strength': 0, 'planner_strength': 0}), [])
+
+    def test_weighted_scales_each_half_on_its_own(self):
+        rng = np.random.default_rng(6)
+        ar = {k: (A, B, 0.5) for k, (A, B) in pairs(rng, loras.AR_MODULES).items()}
+        nar = {k: (A, B, 2.0) for k, (A, B) in pairs(rng, loras.NAR_MODULES).items()}
+        io = {'vae2llm': {'weight': np.ones((8, 64), np.float32)}}
+        delta = {'linears': {**ar, **nar}, 'io': io}
+        out = loras.weighted(delta, 1.5, 0.5)
+        for key, (A, B, scale) in out['linears'].items():
+            expected = 0.5 * 0.5 if key[1] in loras.AR_MODULES else 2.0 * 1.5
+            self.assertAlmostEqual(scale, expected, msg=str(key))
+            self.assertIs(A, delta['linears'][key][0], 'the tensors are shared, only the scale changes')
+        self.assertEqual(set(out['linears']), set(delta['linears']))
+        self.assertEqual(set(out['io']), {'vae2llm'})
+        writing_only = loras.weighted(delta, 0, 1.0)
+        self.assertTrue(writing_only['linears'] and all(k[1] in loras.AR_MODULES for k in writing_only['linears']))
+        self.assertEqual(writing_only['io'], {}, 'replacement projections belong to the decoder half')
+        sound_only = loras.weighted(delta, 1.0, 0)
+        self.assertTrue(sound_only['linears'] and all(k[1] in loras.NAR_MODULES for k in sound_only['linears']))
+        merged = loras.combine([(loras.weighted(delta, 1.5, 0.5), 1.0)])
+        for key, (A, B, scale) in merged['linears'].items():
+            expected = 0.5 * 0.5 if key[1] in loras.AR_MODULES else 2.0 * 1.5
+            np.testing.assert_allclose(B @ A, expected * (delta['linears'][key][1] @ delta['linears'][key][0]), rtol=1e-5)
+
     def test_drop_ar_keeps_decoder_adapters_for_covers(self):
         rng = np.random.default_rng(5)
         writing = {'linears': {**{k: (A, B, 1.0) for k, (A, B) in pairs(rng, loras.AR_MODULES).items()},
@@ -398,6 +432,20 @@ class LoraAPITest(unittest.TestCase):
             saved = json.loads((self.s.LIB / r.json()['id'] / 'request.json').read_text())
             self.assertEqual((saved['lora'], saved['lora_strength']), ('strings.safetensors', 0.8))
             self.assertEqual((saved['sound_lora'], saved['sound_lora_strength']), ('', 1.0))
+            self.assertIsNone(saved['planner_strength'], 'unset: the writing half follows Strength')
+
+    def test_jobs_may_set_the_writing_strength_apart(self):
+        base = {'kind': 'plan', 'style': 'pop', 'lyrics': 'la', 'model': 'bf16', 'lora': 'strings.safetensors'}
+        with patch.object(self.s, 'launch'), patch.object(self.s, 'model_ready', return_value=True):
+            r = self.client.post('/api/jobs', json={**base, 'planner_strength': 2.5}, headers=self.headers)
+            self.assertEqual(r.status_code, 422, r.text)
+            r = self.client.post('/api/jobs', json={**base, 'planner_strength': -0.1}, headers=self.headers)
+            self.assertEqual(r.status_code, 422, r.text)
+            r = self.client.post('/api/jobs', json={**base, 'lora_strength': 1.5, 'planner_strength': 1.0}, headers=self.headers)
+            self.assertEqual(r.status_code, 200, r.text)
+            saved = json.loads((self.s.LIB / r.json()['id'] / 'request.json').read_text())
+            self.assertEqual((saved['lora_strength'], saved['planner_strength']), (1.5, 1.0))
+            self.assertEqual(loras.planner_of(saved), 1.0)
 
     def test_the_sound_slot_takes_a_second_file(self):
         write_safetensors(self.root / 'loras' / 'room.safetensors', hf_tensors(pairs(np.random.default_rng(2), ('nar_mlp',))))

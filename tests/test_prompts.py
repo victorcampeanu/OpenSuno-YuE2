@@ -64,6 +64,12 @@ class PromptAPITest(unittest.TestCase):
         self.assertEqual(second['settings']['semantic_sampling']['max_tokens'], 1000)
         self.assertEqual(first['id'] in {p['id'] for p in self.snapshot()['prompts']}, True)
 
+    def test_keeps_the_writing_strength_of_a_lora(self):
+        saved = self.create('Chanson', 'chnsn, French', {'lora': 'CHNSN Cabaret.safetensors', 'lora_strength': 1.0, 'planner_strength': 0.5})
+        self.assertEqual((saved['settings']['lora_strength'], saved['settings']['planner_strength']), (1.0, 0.5))
+        plain = self.create('Plain', 'pop', {'lora': 'CHNSN Cabaret.safetensors'})
+        self.assertIsNone(plain['settings']['planner_strength'])
+
     def test_prompt_cap(self):
         store = Prompts(self.root / '.prompts.json')
         for i in range(PROMPT_LIMIT):

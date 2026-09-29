@@ -216,7 +216,7 @@ editing and extending possible later.
 - **What:** Models are downloaded from the Models panel as packages (`bf16`, `cuda-bf16`,
   `cuda-fp8`, `analysis`, `tokens`) with live percentage, bytes and speed; failures resume. LoRA adapters
   (`YuE2 instrumental (Mothersuperior v3)`, `Old School Hip-Hop`, and the becausereasons
-  artist packs MLTNT, CHNSN, QWWL / DRKSF and CNZN) are listed under a
+  artist packs QTSTRM, TRBDR, MLTNT, CHNSN, QWWL / DRKSF, BLGR and CNZN) are listed under a
   separate LoRAs heading, grouped by family with trigger words and recommended settings, and are not part of
   Install all missing. **Download all** on that heading starts every missing adapter at once.
 - **How:** `config/model-assets.json` pins repository, revision, path, size and SHA-256 for every file;

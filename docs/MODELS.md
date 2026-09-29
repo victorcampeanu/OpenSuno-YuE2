@@ -86,7 +86,8 @@ is rendered).
 
 - **Models → LoRAs** lists the documented community adapters from
   [`lora-assets.json`](../config/lora-assets.json): YuE2 instrumental (Mothersuperior v3), Old School
-  Hip-Hop, the MLTNT / CHNSN / QWWL / DRKSF / CNZN artist packs and the Real-audio decoder v9.
+  Hip-Hop, the QTSTRM / TRBDR / MLTNT / CHNSN / QWWL / DRKSF / BLGR / CNZN artist packs (30 files from
+  [becausereasons](https://huggingface.co/becausereasons)) and the Real-audio decoder v9.
   Downloaded files go to `loras/`.
 - Any other YuE2 LoRA in `.safetensors` (Hugging Face, PEFT, ComfyUI or Sound & Vision layout) can be
   dropped into `loras/` by hand. It appears in the picker the next time it opens. See
@@ -97,6 +98,11 @@ To use one, open **More Options** when creating a song:
 - **Writes** (the style LoRA): choosing a documented adapter fills in its recommended strength, plan
   and style influence. Its trigger word (for example `mltnt` or `sv_oldschoolhiphop`) should start
   the style line.
+- **Strength and Writing strength:** Strength scales the whole adapter. Artist packs document the
+  planner (ComfyUI `strength_clip`) and the decoder (`strength_model`) apart, so choosing a card that needs
+  them different, such as CNZN Notte at 50% writing / 100% sound, fills in **Writing strength** and Strength
+  then means the sound half. Writing strength shows "Same" and follows Strength until you move it; its reset
+  button hands it back. Keep it at or below 100%: above that the vocal collapses on these adapters.
 - **Renders** (the sound LoRA): for sound-only adapters such as the Real-audio decoder v9. It stacks
   with the Writes LoRA.
 

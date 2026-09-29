@@ -68,7 +68,8 @@ const samplingDescriptions={
  weirdness:'Safe to chaos. 50% is the normal result. Lower for a safer, more conventional song; higher for surprises, which can get messy.',
  style_influence:'Loose to strong. How closely the song follows your style text and lyrics. Raise it if the genre, instruments or mood get ignored; too strong can sound forced. Does not change the melody.',
  repetition:'How much the music may repeat what it just played. Allow more for steady grooves and long held notes; allow less if a song gets stuck in loops.',
- lora_strength:'How much of this adapter is mixed into the model for this song. 100% is the usual recipe; lower is subtler, above 100% can overpower the base model.',
+ lora_strength:'How much of this adapter is mixed into the model for this song. 100% is the usual recipe; lower is subtler, above 100% can overpower the base model. While Writing strength is set on its own, this is the sound (decoder) half only.',
+ lora_planner:'How much of the adapter\u2019s writing half (the planner: score, structure, singer identity) is mixed in. It follows Strength until you move it. Some adapters want the writing half lower than the sound half, for example 50% writing with 100% sound keeps the voice while the base model keeps song structure; above 100% can collapse the vocal.',
  sound_lora_strength:'How much of the sound adapter is mixed into the decoder. 100% is the usual recipe; it only changes the rendered audio, so the song\u2019s notes and words stay the same.'
 };
 
@@ -123,7 +124,7 @@ function request(kind=mode==='cover'?'cover':'generate'){
  abc_sampling:abcSampling(),semantic_sampling:sampling(),audio_id:mode==='cover'?source?.id||'':'',
  melody_only:$('preserve').value==='melody',source_seconds:Number($('sourceSeconds').value),
  arrange:$('arrangeCover').checked,vocal_octave:$('vocalOctave').value,
- lora:$('lora').value,lora_strength:Number($('loraStrengthSlider').value),
+ lora:$('lora').value,lora_strength:Number($('loraStrengthSlider').value),planner_strength:$('lora').value&&!loraPlannerLinked?Number($('loraPlannerSlider').value):null,
  sound_lora:$('soundLora').value,sound_lora_strength:Number($('soundLoraStrengthSlider').value)};
  if(['generate','cover'].includes(kind)){
   const settings=typeof StyleAISettings==='undefined'?{}:StyleAISettings.get();
@@ -229,6 +230,7 @@ function setupSimpleSliders(){
  settingInfo(document.querySelector('label[for=styleInfluenceSlider]'),'style_influence','Style Influence','50%');
  settingInfo(document.querySelector('label[for=repetitionSlider]'),'repetition','Repetition','Normal');
  settingInfo(document.querySelector('label[for=loraStrengthSlider]'),'lora_strength','LoRA Strength','100%');
+ settingInfo(document.querySelector('label[for=loraPlannerSlider]'),'lora_planner','Writing Strength','the same as Strength');
  settingInfo(document.querySelector('label[for=soundLoraStrengthSlider]'),'sound_lora_strength','Sound LoRA Strength','100%');
  const commit=()=>{updateUI();saveDraft()};
  $('compositionSlider').oninput=()=>{abcCustom=null;commit()};
@@ -322,7 +324,9 @@ function loraDetail(l,opts){
  if(opts?.branch!==false&&branch)parts.push(branch);
  if(opts?.trigger!==false&&l.trigger)parts.push('Trigger '+l.trigger);
  if(s.instrumental)parts.push('Instrumental');
- if(Number.isFinite(s.lora_strength))parts.push('strength '+Number(s.lora_strength).toFixed(2).replace(/0+$/,'').replace(/\.$/,''));
+ const num=v=>Number(v).toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
+ if(Number.isFinite(s.lora_strength))parts.push((Number.isFinite(s.planner_strength)?'sound strength ':'strength ')+num(s.lora_strength));
+ if(Number.isFinite(s.planner_strength))parts.push('writing strength '+num(s.planner_strength));
  const plan=loraPlanLabel(s.cot);if(plan)parts.push(plan);
  if(Number.isFinite(s.cfg_scale))parts.push('cfg '+Number(s.cfg_scale).toFixed(1));
  if(opts?.steps!==false&&Number.isFinite(l.steps))parts.push(Number(l.steps).toLocaleString('en-US')+' steps');
@@ -372,6 +376,8 @@ function applyLoraCard(l){
   }
  }
  if(Number.isFinite(s.lora_strength))$('loraStrengthSlider').value=s.lora_strength;
+ loraPlannerLinked=!Number.isFinite(s.planner_strength);
+ if(!loraPlannerLinked)$('loraPlannerSlider').value=s.planner_strength;
  if(mode!=='cover'&&['full','melody','off'].includes(s.cot)){
   // Instrumental songs need a score; No Plan is forced off after updateUI.
   $('cot').value=(s.cot==='off'&&s.instrumental)?'full':s.cot;
@@ -387,6 +393,7 @@ function applyLoraCard(l){
    artist and planner adapters, including ones that also carry a sound half; its card fills Controls. Sound LoRA:
    decoder-only (NAR) files, so the two lists never overlap. */
 function loraIsSoundOnly(l){const b=l.branches||[];return b.includes('nar')&&!b.includes('ar')}
+let loraPlannerLinked=true;
 const LORA_SLOTS={
  lora:{select:'lora',slider:'loraStrengthSlider',row:'loraRow',strengthRow:'loraStrengthRow',value:'loraStrengthValue',hint:'loraHint',reset:'resetLoraStrength',other:'sound',
   fits:l=>!!l.error||!loraIsSoundOnly(l),card:true,
@@ -430,6 +437,11 @@ function setLora(name,strength,slot='lora'){
  syncLora(slot);
 }
 function setSoundLora(name,strength){setLora(name,strength,'sound')}
+function setPlannerStrength(value){
+ loraPlannerLinked=!Number.isFinite(value);
+ if(!loraPlannerLinked)$('loraPlannerSlider').value=Math.max(0,Math.min(2,value));
+ syncLora('lora');
+}
 function syncLora(slot){
  if(!slot){for(const s of Object.keys(LORA_SLOTS))syncLora(s);return}
  const cfg=LORA_SLOTS[slot],select=$(cfg.select);if(!select)return;
@@ -437,9 +449,17 @@ function syncLora(slot){
  $(cfg.row).hidden=!!config?.hosted;
  $(cfg.strengthRow).hidden=!chosen;
  $(cfg.value).value=Math.round(s*100)+'%';
- paintSliderTicks();
  const l=(config?.loras||[]).find(x=>x.id===chosen);
  const missing=chosen&&!(l&&!l.error);
+ if(slot==='lora'){
+  const writes=!!chosen&&!missing&&(l.branches||[]).includes('ar');
+  $('loraPlannerRow').hidden=!writes||!!config?.hosted;
+  if(loraPlannerLinked||!writes)$('loraPlannerSlider').value=s;
+  const own=writes&&!loraPlannerLinked;
+  $('loraPlannerValue').value=own?Math.round(Number($('loraPlannerSlider').value)*100)+'%':'Same';
+  const label=document.querySelector('label[for=loraStrengthSlider]');if(label)label.textContent=own?'Sound strength':'Strength';
+ }
+ paintSliderTicks();
  select.classList.toggle('missing',!!missing);
  select.title=missing?'This file is not in the loras folder'+(config?.render_node?.connected?' of the render node.':'.')+' Drop it there, or choose another.':(l?loraTooltip(l):cfg.idle);
  const hint=$(cfg.hint);
@@ -464,6 +484,7 @@ function setupLoras(){
    const chosen=select.value,l=(config?.loras||[]).find(x=>x.id===chosen);
    if(l&&cfg.card)applyLoraCard(l);
    else if(l&&Number.isFinite(l.settings?.lora_strength))$(cfg.slider).value=l.settings.lora_strength;
+   if(slot==='lora'&&!l)loraPlannerLinked=true;
    // The same file cannot sit in both slots: the other picker greys it out.
    applySlotChoices(cfg.other);
    updateUI();saveDraft();
@@ -471,6 +492,8 @@ function setupLoras(){
   $(cfg.slider).oninput=()=>{syncLora(slot);saveDraft()};
   $(cfg.reset).onclick=()=>{$(cfg.slider).value=1;syncLora(slot);saveDraft()};
  }
+ $('loraPlannerSlider').oninput=()=>{loraPlannerLinked=false;syncLora('lora');saveDraft()};
+ $('resetLoraPlanner').onclick=()=>{loraPlannerLinked=true;syncLora('lora');saveDraft()};
 }
 function renderNodeName(node){
  node=node||config?.render_node;
@@ -677,10 +700,11 @@ function restore(r){
  $('vocalOctave').value=['auto','keep','down','down2','up'].includes(r.vocal_octave)?r.vocal_octave:'auto';
  setComposition(r.abc_sampling);
  setLora(r.lora||'',r.lora_strength);
+ setPlannerStrength(r.lora&&Number.isFinite(r.planner_strength)?r.planner_strength:null);
  setSoundLora(r.sound_lora||'',r.sound_lora_strength);
  restoring=false;updateUI();
 }
-function restoreDefaults(){$('lockSeed').checked=false;$('model').value=config.default_model||'bf16';$('candidates').value='1';$('cot').value='full';$('voice').value='any';setSampling(config.defaults.semantic);setComposition(null);setLora('',1);setSoundLora('',1);$('steps').value=config.defaults.ode_steps;$('cfg').value=1.2;updateUI();saveDraft()}
+function restoreDefaults(){$('lockSeed').checked=false;$('model').value=config.default_model||'bf16';$('candidates').value='1';$('cot').value='full';$('voice').value='any';setSampling(config.defaults.semantic);setComposition(null);setLora('',1);setPlannerStrength(null);setSoundLora('',1);$('steps').value=config.defaults.ode_steps;$('cfg').value=1.2;updateUI();saveDraft()}
 let sourceAnalysis={key:'',status:'missing'},analysisBusy=false,analysisRefreshTimer=null;
 let analysisLiveJob=null,pendingAudioUpload=null,analysisRetryRequested=false;
 function openAnalysisDialog(){
@@ -1046,7 +1070,10 @@ function songKindTags(j){
  else if(j.request.origin?.kind==='speed')tags.push(['speed',Number(j.request.origin.factor).toFixed(2)+'X SPEED']);
  return tags;
 }
-function loraBadge(name,strength){return loraName(name)+(Number.isFinite(strength)&&Math.abs(strength-1)>.001?' ×'+Number(strength).toFixed(2):'')}
+function loraBadge(name,strength,planner){
+ const off=v=>Number.isFinite(v)&&Math.abs(v-1)>.001,x=v=>' ×'+Number(v).toFixed(2);
+ return loraName(name)+(off(strength)?x(strength):'')+(Number.isFinite(planner)&&Math.abs(planner-(Number.isFinite(strength)?strength:1))>.001?' · writing'+x(planner):'');
+}
 /* Job ids start with the local time the song was requested (YYYYMMDD-HHMMSS). */
 function createdAt(j){
  const m=/^(\d{4})(\d\d)(\d\d)-(\d\d)(\d\d)(\d\d)/.exec(j?.id||'');if(!m)return null;
@@ -1061,7 +1088,7 @@ function timingBadges(j,c,{duration=true}={}){
  const raw=j.request?.cfg_scale,guidance=typeof raw==='number'&&Number.isFinite(raw)?String(Number(raw.toFixed(2))):null;
  const upload=isUpload(j);
  const created=createdAt(j);
- for(const [label,value]of [['Duration',duration?clockTime(c.seconds):null],['Took',upload||generationSeconds(j,c)===null?null:formatGenerationTime(generationSeconds(j,c))],['Steps',!upload&&Number.isFinite(j.request?.steps)?j.request.steps:null],['Style LoRA',!upload&&j.request?.lora?loraBadge(j.request.lora,j.request.lora_strength):null],['Sound LoRA',!upload&&j.request?.sound_lora?loraBadge(j.request.sound_lora,j.request.sound_lora_strength):null],['Style influence',upload?null:guidance],['Created',created]]){
+ for(const [label,value]of [['Duration',duration?clockTime(c.seconds):null],['Took',upload||generationSeconds(j,c)===null?null:formatGenerationTime(generationSeconds(j,c))],['Steps',!upload&&Number.isFinite(j.request?.steps)?j.request.steps:null],['Style LoRA',!upload&&j.request?.lora?loraBadge(j.request.lora,j.request.lora_strength,j.request.planner_strength):null],['Sound LoRA',!upload&&j.request?.sound_lora?loraBadge(j.request.sound_lora,j.request.sound_lora_strength):null],['Style influence',upload?null:guidance],['Created',created]]){
   if(value===null)continue;
   const badge=document.createElement('span');badge.className='timing-badge'+(label==='Created'?' timing-created':'');
   badge.title=label+' '+value;

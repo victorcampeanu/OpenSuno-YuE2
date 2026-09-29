@@ -110,13 +110,16 @@ Details for each are in [FEATURES.md](docs/FEATURES.md).
   combines with anything.
 - **Writes:** None for a general song. Pick a style LoRA only when you want its genre, and let its
   card fill in the settings. Start the style line with its trigger word (`sv_oldschoolhiphop`,
-  `mltnt`, `chnsn`, `qwwl`, `drksf`, `cnzn`).
+  `qtstrm`, `trbdr`, `mltnt`, `chnsn`, `qwwl`, `drksf`, `blgr`, `cnzn`).
   - **YuE2 instrumental (Mothersuperior v3):** Instrumental on, Melody and Chords, 70% strength.
     100% tends to repeat patterns.
   - **Old School Hip-Hop:** 100%, No Plan, Style Influence 1.0.
   - **QWWL / DRKSF (qawwali):** always No Plan. Melody and Chords pulls them back to pop.
-  - **MLTNT, CHNSN, CNZN:** keep the card's settings (mostly 100%; MLTNT Fusion uses 150%) and
-    write lyrics in the pack's language: Jamaican Patois, French or Italian.
+  - **MLTNT, CHNSN, CNZN, QTSTRM, TRBDR, BLGR:** keep the card's settings and write lyrics in the pack's
+    language: Jamaican Patois, French, Italian, English (QTSTRM, TRBDR), Bulgarian or Tuvan (BLGR). Most run at
+    100%. The newer files (MLTNT Soundclash, CNZN Notte and Coro, CHNSN Cabaret) fill in **Writing
+    strength** 50% because their cards say so: half-strength writing keeps the voice and lets the base
+    model keep the song structure. MLTNT Fusion, BLGR Steppe and Kargyraa push **Strength** to 150%.
 - **Plan:** Melody and Chords (the default) gives the most structured songs.
 - **Style Influence:** 1.2. Raise it toward 1.5 if the genre, instruments or voice are ignored.
 - **Repetition:** set it to *Less* if a song gets stuck in a loop.

@@ -221,6 +221,7 @@ else:
         dims=None
         parts=[]
         writing=r.get('lora') or ''
+        planner=loras.planner_of(r)
         for name,strength in wanted:
             delta=LORA_CACHE.get(name)
             if delta is None:
@@ -231,6 +232,10 @@ else:
                 delta=loras.drop_ar(delta)
                 if not delta['linears'] and not delta['io']:
                     continue
+            if planner is not None and name==writing:
+                delta,strength=loras.weighted(delta,strength,planner),1.0
+                if not delta['linears'] and not delta['io']:
+                    continue
             parts.append((delta,strength))
         if not parts:
             adapters.clear(pipe.model)
@@ -239,9 +244,9 @@ else:
         combined=parts[0][0] if len(parts)==1 else loras.combine(parts)
         strength=parts[0][1] if len(parts)==1 else 1.0
         count=adapters.apply(pipe.model,combined,strength,weights=ROOT/'model'/variant/'model.safetensors',
-                             label=tuple(wanted)+(('cover-decoder',) if drop_writing_ar else ()))
+                             label=tuple(wanted)+((('writing',planner),) if planner is not None else ())+(('cover-decoder',) if drop_writing_ar else ()))
         loaded()
-        for name,s in wanted: log(f"[lora] {name} at strength {s:g}")
+        for name,s in wanted: log(f"[lora] {name} at strength {s:g}"+(f" (writing half at {planner:g})" if planner is not None and name==writing else ''))
         if drop_writing_ar:
             log('[lora] Cover: decoder half of the Writes adapter only, so the transcribed melody does not loop')
         log(f"[lora] {count} adapted layers")

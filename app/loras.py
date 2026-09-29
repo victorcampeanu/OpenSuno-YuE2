@@ -424,15 +424,40 @@ def check(delta, dims=None):
     return delta
 
 
+def planner_of(request):
+    """Strength of the LoRA's writing (planner) half when the request sets it apart from ``lora_strength``, else None.
+
+    Artist LoRAs document the two halves separately (ComfyUI ``strength_clip`` for the planner, ``strength_model`` for
+    the decoder); some sound best with the planner at 0.5 and the decoder at 1.0, others with the decoder pushed to 1.5
+    while the planner stays at 1.0. ``lora_strength`` then means the decoder half."""
+    value = request.get('planner_strength')
+    if value is None or not request.get('lora'):
+        return None
+    return float(value)
+
+
 def chosen(request):
     """``[(file, strength), ...]`` the request asks for: the LoRA (writing) and the Sound LoRA (decoder), each
-    only when named with a non-zero strength."""
+    only when named with a non-zero strength. A LoRA whose decoder strength is zero still counts when its
+    planner strength is not."""
     out = []
+    planner = planner_of(request)
     for name_key, strength_key in (('lora', 'lora_strength'), ('sound_lora', 'sound_lora_strength')):
         name, strength = request.get(name_key) or '', float(request.get(strength_key, 1.0) or 0)
-        if name and strength:
+        if name and (strength or (name_key == 'lora' and planner)):
             out.append((name, strength))
     return out
+
+
+def weighted(delta, decoder, planner):
+    """One delta with the planner (AR) linears at ``planner`` and everything else at ``decoder``, both folded into
+    the scales, for use at strength 1. A half at zero is left out; io replacements belong to the decoder half."""
+    linears = {}
+    for key, (A, B, scale) in delta['linears'].items():
+        factor = planner if key[1] in AR_MODULES else decoder
+        if factor:
+            linears[key] = (A, B, scale * factor)
+    return {'linears': linears, 'io': dict(delta.get('io') or {}) if decoder else {}}
 
 
 def combine(parts):
