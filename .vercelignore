@@ -11,7 +11,12 @@
 .preloads
 .model-downloads
 .song-edits
+.node-jobs
+.render-node.json
+.prompts.json
+.workspaces.json
 .trash
+dist
 library
 uploads
 work

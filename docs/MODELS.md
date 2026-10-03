@@ -86,7 +86,7 @@ is rendered).
 
 - **Models → LoRAs** lists the documented community adapters from
   [`lora-assets.json`](../config/lora-assets.json): YuE2 instrumental (Mothersuperior v3), Old School
-  Hip-Hop, the QTSTRM / TRBDR / MLTNT / CHNSN / QWWL / DRKSF / BLGR / CNZN artist packs (30 files from
+  Hip-Hop, the QTSTRM / TRBDR / MLTNT / CHNSN / QWWL / DRKSF / BLGR / CNZN / GRVL artist packs (36 files from
   [becausereasons](https://huggingface.co/becausereasons)) and the Real-audio decoder v9.
   Downloaded files go to `loras/`.
 - Any other YuE2 LoRA in `.safetensors` (Hugging Face, PEFT, ComfyUI or Sound & Vision layout) can be
@@ -96,7 +96,7 @@ is rendered).
 To use one, open **More Options** when creating a song:
 
 - **Writes** (the style LoRA): choosing a documented adapter fills in its recommended strength, plan
-  and style influence. Its trigger word (for example `mltnt` or `sv_oldschoolhiphop`) should start
+  and style influence, plus voice, audio steps and repetition when the card specifies them. Its trigger word (for example `mltnt` or `sv_oldschoolhiphop`) should start
   the style line.
 - **Strength and Writing strength:** Strength scales the whole adapter. Artist packs document the
   planner (ComfyUI `strength_clip`) and the decoder (`strength_model`) apart, so choosing a card that needs

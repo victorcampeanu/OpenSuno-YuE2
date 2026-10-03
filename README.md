@@ -110,10 +110,12 @@ Details for each are in [FEATURES.md](docs/FEATURES.md).
   combines with anything.
 - **Writes:** None for a general song. Pick a style LoRA only when you want its genre, and let its
   card fill in the settings. Start the style line with its trigger word (`sv_oldschoolhiphop`,
-  `qtstrm`, `trbdr`, `mltnt`, `chnsn`, `qwwl`, `drksf`, `blgr`, `cnzn`).
+  `qtstrm`, `trbdr`, `mltnt`, `chnsn`, `qwwl`, `drksf`, `blgr`, `cnzn`, `grvl`).
   - **YuE2 instrumental (Mothersuperior v3):** Instrumental on, Melody and Chords, 70% strength.
     100% tends to repeat patterns.
   - **Old School Hip-Hop:** 100%, No Plan, Style Influence 1.0.
+  - **GRVL (raspy rock-soul):** English lyrics, Female voice, Melody and Chords, writing and sound at
+    100%, Style Influence 1.0, 32 Audio Steps, 330-second cap. Start with Thunder for a consistent voice.
   - **QWWL / DRKSF (qawwali):** always No Plan. Melody and Chords pulls them back to pop.
   - **MLTNT, CHNSN, CNZN, QTSTRM, TRBDR, BLGR:** keep the card's settings and write lyrics in the pack's
     language: Jamaican Patois, French, Italian, English (QTSTRM, TRBDR), Bulgarian or Tuvan (BLGR). Most run at

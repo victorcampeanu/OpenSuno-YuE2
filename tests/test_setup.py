@@ -183,6 +183,8 @@ class DownloadsTest(unittest.TestCase):
             'lora-blgr-rhodope': (1.0, None, 'full', 1.0, 0.7, 1.0, 300),
             'lora-blgr-steppe': (1.5, None, 'full', 1.4, 0.9, 1.2, 300),
             'lora-blgr-kargyraa': (1.5, None, 'full', 1.0, 0.7, 1.0, 300),
+            **{f'lora-grvl-{name}': (1.0, 1.0, 'full', 1.0, 0.7, 1.0, 330)
+               for name in ('thunder', 'tempest', 'wildfire', 'cinder', 'smoulder', 'ember')},
         }
         catalog = {item['id']: item for item in json.loads((ROOT/'config/lora-assets.json').read_text())}
         for id, (strength, writing, plan, cfg, composition, weirdness, cap) in expected.items():
@@ -199,7 +201,11 @@ class DownloadsTest(unittest.TestCase):
         triggers = {item['family']: item['trigger'] for id, item in catalog.items() if id in expected and id not in ('lora-drksf-midnight',)}
         self.assertEqual(triggers, {'QTSTRM - Quiet Storm R&B': 'qtstrm', 'TRBDR - Folk Troubadour': 'trbdr', 'CNZN - Canzone Italiana': 'cnzn',
                                     'CHNSN - Chanson Francaise': 'chnsn', 'MLTNT - Militant Reggae': 'mltnt', 'QWWL / DRKSF - Qawwali': 'qwwl',
-                                    'BLGR - Bulgarian Voices': 'blgr'})
+                                    'BLGR - Bulgarian Voices': 'blgr', 'GRVL - Raspy Rock-Soul': 'grvl'})
+        for item in catalog.values():
+            if item['family'] == 'GRVL - Raspy Rock-Soul':
+                self.assertEqual((item['settings']['voice'], item['settings']['steps'], item['settings']['repetition_penalty']),
+                                 ('female', 32, 1.2))
         self.assertEqual(catalog['lora-drksf-midnight']['trigger'], 'drksf')
         self.assertEqual(len({item['revision'] for item in catalog.values() if item['repo'] == 'becausereasons/yue2-cnzn-canzone-italiana'}), 1,
                          'files of one repo are pinned to one revision')

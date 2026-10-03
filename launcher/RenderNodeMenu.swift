@@ -206,6 +206,7 @@ final class MenuApp: NSObject, NSApplicationDelegate {
     var health: [String: Any]? = nil
     var timer: Timer?
     var pollInFlight = false
+    var studioStarting = false
 
     let info = InfoView()
     let infoItem = NSMenuItem()
@@ -431,7 +432,33 @@ final class MenuApp: NSObject, NSApplicationDelegate {
     }
 
     @objc func openStudio() {
-        NSWorkspace.shared.open(URL(string: "http://127.0.0.1:7862/")!)
+        guard !studioStarting else { return }
+        studioStarting = true
+        DispatchQueue.global(qos: .userInitiated).async {
+            let process = Process()
+            process.executableURL = URL(fileURLWithPath: root + "/.venv/bin/python")
+            process.arguments = [root + "/launcher/launch.py"]
+            process.standardOutput = FileHandle.nullDevice
+            let errors = Pipe()
+            process.standardError = errors
+            var message: String? = nil
+            do {
+                try process.run()
+                process.waitUntilExit()
+                if process.terminationStatus != 0 {
+                    message = String(decoding: errors.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+                        .trimmingCharacters(in: .whitespacesAndNewlines)
+                }
+            } catch {
+                message = error.localizedDescription
+            }
+            DispatchQueue.main.async {
+                self.studioStarting = false
+                if let message = message {
+                    self.alert("Open Studio", message.isEmpty ? "The Studio could not start. Check ~/Library/Logs/OpenSuno/server.log." : message)
+                }
+            }
+        }
     }
 
     @objc func quit() {

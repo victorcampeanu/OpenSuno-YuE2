@@ -324,11 +324,13 @@ function loraDetail(l,opts){
  if(opts?.branch!==false&&branch)parts.push(branch);
  if(opts?.trigger!==false&&l.trigger)parts.push('Trigger '+l.trigger);
  if(s.instrumental)parts.push('Instrumental');
+ if(s.voice&&s.voice!=='any')parts.push(VOICE_LABELS[s.voice]||s.voice);
  const num=v=>Number(v).toFixed(2).replace(/0+$/,'').replace(/\.$/,'');
  if(Number.isFinite(s.lora_strength))parts.push((Number.isFinite(s.planner_strength)?'sound strength ':'strength ')+num(s.lora_strength));
  if(Number.isFinite(s.planner_strength))parts.push('writing strength '+num(s.planner_strength));
  const plan=loraPlanLabel(s.cot);if(plan)parts.push(plan);
  if(Number.isFinite(s.cfg_scale))parts.push('cfg '+Number(s.cfg_scale).toFixed(1));
+ if(Number.isFinite(s.steps))parts.push(s.steps+' audio steps');
  if(opts?.steps!==false&&Number.isFinite(l.steps))parts.push(Number(l.steps).toLocaleString('en-US')+' steps');
  if(l.rank&&!branch)parts.push('rank '+l.rank);
  return parts.join(' · ');
@@ -376,6 +378,8 @@ function applyLoraCard(l){
   }
  }
  if(Number.isFinite(s.lora_strength))$('loraStrengthSlider').value=s.lora_strength;
+ if(['any','male','female','duet'].includes(s.voice))$('voice').value=s.voice;
+ if(Number.isFinite(s.steps))$('steps').value=s.steps;
  loraPlannerLinked=!Number.isFinite(s.planner_strength);
  if(!loraPlannerLinked)$('loraPlannerSlider').value=s.planner_strength;
  if(mode!=='cover'&&['full','melody','off'].includes(s.cot)){
@@ -388,6 +392,10 @@ function applyLoraCard(l){
   if(Number.isFinite(s.temperature)){const w=Math.max(0,Math.min(100,Math.round(uncurve(s.temperature,simpleCurves.temperature))));$('weirdnessSlider').value=w;applyWeirdness(w)}
  }
  if(Number.isFinite(s.duration))$('duration').value=s.duration;
+ if(Number.isFinite(s.repetition_penalty)){
+  semanticState??={...config.defaults.semantic};
+  semanticState.repetition_penalty=s.repetition_penalty;
+ }
 }
 /* Two slots, folded into the model together. Style LoRA: every file that touches the writing (AR) branch — genre,
    artist and planner adapters, including ones that also carry a sound half; its card fills Controls. Sound LoRA:
