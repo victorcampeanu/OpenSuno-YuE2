@@ -183,6 +183,11 @@ Downloads run one file at a time, resume after interruption and are verified wit
 installed, generation runs offline. [MODELS.md](docs/MODELS.md) lists every package and how to
 download it by hand.
 
+Studio uses port `7862` by default (`YUE2_PORT` overrides it). When Settings → Rendering points to
+a local render node, launching Studio also starts that node on the configured port (normally `7863`),
+even if Studio is already open. This makes the node's installed models and LoRAs available again.
+Nodes on other machines must be started on those machines.
+
 ### Windows / NVIDIA
 
 Use 64-bit Windows, an NVIDIA GPU with a current CUDA 13-capable driver, Python 3.11 (with the
